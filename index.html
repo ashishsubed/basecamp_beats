@@ -12,6 +12,10 @@
       box-sizing: border-box;
     }
     
+    html {
+      scroll-behavior: smooth;
+    }
+    
     body {
       margin: 0;
       font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -45,7 +49,7 @@
     }
     
     header {
-      padding: 60px 20px 50px;
+      padding: 40px 20px 30px;
       animation: fadeIn 1s ease-in;
       position: relative;
       overflow: hidden;
@@ -212,26 +216,33 @@
     
     .hero {
       margin: 0 auto 80px;
-      max-width: 750px;
+      max-width: 900px;
       padding: 0 20px;
       animation: slideUp 0.8s ease-out;
     }
     
-    .hero img {
+    .event-poster {
       width: 100%;
-      border-radius: 24px;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      display: block;
+      border-radius: 20px;
       box-shadow: 
         0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 210, 255, 0.1);
-      margin-bottom: 35px;
+        0 0 0 1px rgba(0, 210, 255, 0.15);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .hero img:hover {
-      transform: translateY(-8px);
+    .event-poster:hover {
+      transform: translateY(-5px);
       box-shadow: 
-        0 30px 80px rgba(0, 210, 255, 0.3),
+        0 25px 70px rgba(0, 210, 255, 0.25),
         0 0 0 1px rgba(0, 210, 255, 0.3);
+    }
+    
+    .event-info {
+      max-width: 800px;
+      margin: 0 auto;
     }
     
     .hero h2 {
@@ -239,17 +250,253 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      text-align: center;
     }
     
-    .hero p {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.95);
+    .event-description {
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.8;
+      margin-bottom: 40px;
+      text-align: center;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .event-details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .detail-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .detail-item:hover {
+      background: rgba(0, 210, 255, 0.05);
+      border-color: rgba(0, 210, 255, 0.4);
+      transform: translateY(-3px);
+    }
+    
+    .detail-icon {
+      font-size: 2rem;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .detail-content {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .detail-label {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .detail-value {
+      font-size: 1.1rem;
+      color: #63e6be;
+      font-weight: 600;
+    }
+    
+    .event-schedule {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 40px;
+      border: 1px solid rgba(0, 210, 255, 0.15);
+    }
+    
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .schedule-item:last-child {
       margin-bottom: 0;
-      font-weight: 400;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .schedule-item:hover {
+      background: rgba(0, 210, 255, 0.05);
+    }
+    
+    .schedule-icon {
+      font-size: 1.5rem;
+      min-width: 30px;
+    }
+    
+    .schedule-label {
+      flex: 1;
+      font-size: 1.1rem;
+      color: #63e6be;
+      font-weight: 600;
+    }
+    
+    .schedule-time {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+    
+    .event-notes {
+      text-align: center;
+      margin-top: 35px;
+    }
+    
+    .event-notes p {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 12px;
+    }
+    
+    .event-notes strong {
+      color: #00d2ff;
+      font-weight: 700;
+    }
+    
+    .ticket-warning {
+      color: #FF6B6B !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+    }
+    
+    /* Top Navigation */
+    .top-nav {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      padding: 20px 20px 30px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .top-nav-btn {
+      padding: 16px 36px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .top-nav-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .top-nav-btn:hover::before {
+      left: 100%;
+    }
+    
+    .top-nav-btn span {
+      font-size: 1.3rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    
+    .top-nav-primary {
+      background: linear-gradient(135deg, #00d2ff 0%, #0088cc 100%);
+      color: #ffffff;
+      box-shadow: 
+        0 6px 20px rgba(0, 210, 255, 0.4),
+        0 2px 8px rgba(0, 210, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .top-nav-primary:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        0 10px 30px rgba(0, 210, 255, 0.6),
+        0 4px 15px rgba(0, 210, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, #00e5ff 0%, #0099dd 100%);
+    }
+    
+    .top-nav-primary:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+    
+    .top-nav-secondary {
+      background: linear-gradient(135deg, rgba(99, 230, 190, 0.15) 0%, rgba(99, 230, 190, 0.05) 100%);
+      color: #63e6be;
+      border: 2px solid rgba(99, 230, 190, 0.5);
+      box-shadow: 
+        0 4px 15px rgba(99, 230, 190, 0.2),
+        inset 0 1px 0 rgba(99, 230, 190, 0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .top-nav-secondary:hover {
+      background: linear-gradient(135deg, rgba(99, 230, 190, 0.25) 0%, rgba(99, 230, 190, 0.15) 100%);
+      border-color: #63e6be;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        0 8px 25px rgba(99, 230, 190, 0.4),
+        inset 0 1px 0 rgba(99, 230, 190, 0.3);
+    }
+    
+    .top-nav-secondary:active {
+      transform: translateY(-2px) scale(1.01);
+    }
+    
+    .top-nav-tertiary {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 4px 15px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .top-nav-tertiary:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+      border-color: rgba(255, 255, 255, 0.6);
+      color: #ffffff;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 
+        0 8px 25px rgba(255, 255, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    .top-nav-tertiary:active {
+      transform: translateY(-2px) scale(1.01);
     }
     
     .button-group {
@@ -404,6 +651,221 @@
       z-index: 1;
     }
     
+    /* FAQ Section */
+    .faq-section {
+      margin: 70px auto 80px;
+      max-width: 1200px;
+      padding: 0 20px;
+    }
+    
+    .faq-container h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 40px;
+      font-family: 'Righteous', sans-serif;
+    }
+    
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+    }
+    
+    .faq-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(0, 210, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .faq-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0, 210, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .faq-card h3 {
+      color: #00d2ff;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    .faq-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    
+    .faq-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0 0 0;
+    }
+    
+    .faq-card li {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+    
+    .faq-card li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #63e6be;
+      font-weight: bold;
+    }
+    
+    .faq-card strong {
+      color: #63e6be;
+      font-weight: 600;
+    }
+    
+    .band-list {
+      margin-top: 20px;
+    }
+    
+    .band-item {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(0, 210, 255, 0.05);
+      border-radius: 12px;
+      border-left: 3px solid #63e6be;
+    }
+    
+    .band-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .band-name {
+      color: #63e6be;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    
+    .band-description {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .highlight-card {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+    
+    .highlight-card:hover {
+      border-color: rgba(255, 107, 107, 0.5);
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.08) 100%);
+    }
+    
+    .highlight-card h3 {
+      color: #FF6B6B;
+    }
+    
+    /* Mission Section */
+    .mission-section {
+      margin: 80px auto 80px;
+      max-width: 1100px;
+      padding: 0 20px;
+      scroll-margin-top: 80px;
+    }
+    
+    .mission-content {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      padding: 60px 50px;
+      border: 1px solid rgba(0, 210, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .mission-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00d2ff, #63e6be, transparent);
+    }
+    
+    .mission-content h2 {
+      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      font-family: 'Righteous', sans-serif;
+    }
+    
+    .mission-text {
+      font-size: 1.2rem;
+      line-height: 2;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 50px;
+      text-align: center;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .mission-values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 50px;
+    }
+    
+    .value-item {
+      text-align: center;
+      padding: 30px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      border: 1px solid rgba(0, 210, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .value-item:hover {
+      transform: translateY(-5px);
+      background: rgba(0, 210, 255, 0.05);
+      border-color: rgba(0, 210, 255, 0.3);
+    }
+    
+    .value-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+    
+    .value-item h3 {
+      color: #63e6be;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    .value-item p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+    
     footer {
       margin-top: 100px;
       padding: 50px 20px;
@@ -467,7 +929,7 @@
     
     @media (max-width: 767px) {
       header {
-        padding: 40px 20px 30px;
+        padding: 30px 20px 20px;
       }
       
       header::before,
@@ -476,22 +938,22 @@
       }
       
       .logo-container::before {
-        width: 140px;
-        height: 140px;
+        width: 130px;
+        height: 130px;
       }
       
       header img {
-        width: 110px;
-        height: 110px;
-        padding: 8px;
+        width: 95px;
+        height: 95px;
+        padding: 7px;
       }
       
       .logo-container {
-        margin-bottom: 25px;
+        margin-bottom: 20px;
       }
       
       h1 {
-        font-size: 2.5rem;
+        font-size: 2.3rem;
         letter-spacing: 1px;
       }
       
@@ -500,7 +962,7 @@
       }
       
       .slogan-wrapper {
-        margin-bottom: 40px;
+        margin-bottom: 30px;
       }
       
       .slogan-wrapper::before,
@@ -509,19 +971,81 @@
       }
       
       p.slogan {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
       }
       
       .hero {
         margin-bottom: 60px;
+        padding: 0 15px;
+      }
+      
+      .event-poster {
+        max-width: 100%;
+        margin-bottom: 30px;
+        border-radius: 15px;
       }
       
       .hero h2 {
-        font-size: 1.8rem;
+        font-size: 2rem;
       }
       
-      .hero p {
-        font-size: 1.1rem;
+      .event-description {
+        font-size: 1.05rem;
+        margin-bottom: 30px;
+      }
+      
+      .event-details-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+      
+      .detail-item {
+        padding: 15px;
+      }
+      
+      .detail-icon {
+        font-size: 1.5rem;
+      }
+      
+      .detail-value {
+        font-size: 1rem;
+      }
+      
+      .event-schedule {
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .schedule-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 15px;
+      }
+      
+      .schedule-icon {
+        font-size: 1.3rem;
+      }
+      
+      .schedule-label {
+        font-size: 1rem;
+      }
+      
+      .schedule-time {
+        font-size: 0.95rem;
+      }
+      
+      .event-notes {
+        margin-top: 25px;
+      }
+      
+      .event-notes p {
+        font-size: 0.95rem;
+      }
+      
+      .ticket-warning {
+        font-size: 0.9rem !important;
       }
       
       .button-group {
@@ -544,44 +1068,268 @@
       .card {
         padding: 35px 25px;
       }
+      
+      .top-nav {
+        padding: 15px 15px 25px;
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+      
+      .top-nav-btn {
+        padding: 14px 28px;
+        font-size: 1rem;
+        flex: 1 1 auto;
+        min-width: 110px;
+        justify-content: center;
+      }
+      
+      .top-nav-btn span {
+        font-size: 1.2rem;
+      }
+      
+      .faq-section {
+        margin: 60px auto;
+      }
+      
+      .faq-container h2 {
+        font-size: 2rem;
+        margin-bottom: 35px;
+      }
+      
+      .faq-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .faq-card {
+        padding: 25px 20px;
+      }
+      
+      .faq-card h3 {
+        font-size: 1.15rem;
+      }
+      
+      .faq-card p,
+      .faq-card li {
+        font-size: 1rem;
+      }
+      
+      .band-item {
+        padding: 12px;
+        margin-bottom: 15px;
+      }
+      
+      .band-name {
+        font-size: 1.05rem;
+      }
+      
+      .band-description {
+        font-size: 0.95rem;
+      }
+      
+      .mission-section {
+        margin: 70px auto 60px;
+      }
+      
+      .mission-content {
+        padding: 40px 25px;
+        border-radius: 20px;
+      }
+      
+      .mission-content h2 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+      
+      .mission-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 40px;
+      }
+      
+      .mission-values {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-top: 40px;
+      }
+      
+      .value-item {
+        padding: 25px 20px;
+      }
+      
+      .value-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+      
+      .value-item h3 {
+        font-size: 1.3rem;
+      }
+      
+      .value-item p {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo-container">
-      <img src="/logo.webp" alt="Basecamp Beats Logo">
+    <img src="/logo.webp" alt="Basecamp Beats Logo">
     </div>
     <div class="title-wrapper">
-      <h1>Basecamp Beats</h1>
+    <h1>Basecamp Beats</h1>
     </div>
     <div class="slogan-wrapper">
-      <p class="slogan">Where Nepali beats meet friendship, culture, and unforgettable nights.</p>
+    <p class="slogan">Where Nepali beats meet friendship, culture, and unforgettable nights.</p>
     </div>
   </header>
 
+  <!-- Navigation Links -->
+  <nav class="top-nav">
+    <a href="https://www.xudustore.com/event-details-registration/nepali-junction" class="top-nav-btn top-nav-primary">
+      <span>🎟️</span> Get Tickets
+    </a>
+    <a href="/nepali_junction.html" class="top-nav-btn top-nav-secondary">
+      <span>🎮</span> Play Bingo
+    </a>
+    <a href="#about" class="top-nav-btn top-nav-tertiary">
+      <span>ℹ️</span> About Us
+    </a>
+  </nav>
+
   <section class="hero">
-    <img src="/event-poster.webp" alt="Nepali Junction Event Poster">
-    <h2>Upcoming Event</h2>
-    <p>Nepali Junction – October 17th, Tandoori Fairfax, VA</p>
-    <div class="button-group">
-      <a href="https://www.xudustore.com/event-details-registration/nepali-junction" class="btn btn-primary">Get Tickets</a>
-      <a href="/nepali_junction.html" class="btn btn-secondary">Play Networking Bingo!</a>
+    <img src="/event-poster.webp" alt="Nepali Junction Event Poster" class="event-poster">
+    <div class="event-info">
+      <h2>Upcoming Event</h2>
+      <p class="event-description">Nepali Junction is a community networking and entertainment event featuring live Nepali bands, a DJ, and a social atmosphere to connect and celebrate.</p>
+      
+      <div class="event-details-grid">
+        <div class="detail-item">
+          <div class="detail-icon">📅</div>
+          <div class="detail-content">
+            <div class="detail-label">Date</div>
+            <div class="detail-value">October 17th, 2024</div>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-icon">🕐</div>
+          <div class="detail-content">
+            <div class="detail-label">Time</div>
+            <div class="detail-value">7:00 PM - 12:30 AM</div>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <div class="detail-icon">📍</div>
+          <div class="detail-content">
+            <div class="detail-label">Location</div>
+            <div class="detail-value">Tandoori Fairfax, VA</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="event-schedule">
+        <div class="schedule-item">
+          <span class="schedule-icon">🤝</span>
+          <span class="schedule-label">Networking</span>
+          <span class="schedule-time">7-9 PM</span>
+        </div>
+        <div class="schedule-item">
+          <span class="schedule-icon">🎸</span>
+          <span class="schedule-label">Live Music</span>
+          <span class="schedule-time">9-11 PM</span>
+        </div>
+        <div class="schedule-item">
+          <span class="schedule-icon">🎧</span>
+          <span class="schedule-label">DJ</span>
+          <span class="schedule-time">11 PM-12:30 AM</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="cards">
-    <div class="card">
-      <h3>Networking</h3>
-      <p>Connect with Nepali youth and community leaders through engaging events.</p>
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="faq-container">
+      <h2>Event Information</h2>
+      
+      <div class="faq-grid">
+        <div class="faq-card">
+          <h3>🎸 Who's Performing?</h3>
+          <p>Three of the best Nepali bands in the DMV area:</p>
+          <div class="band-list">
+            <div class="band-item">
+              <div class="band-name">Azstra Band</div>
+              <div class="band-description">Modern Nepali rock and soulful covers</div>
+            </div>
+            <div class="band-item">
+              <div class="band-name">Namakaya</div>
+              <div class="band-description">Groove, passion, and rhythm</div>
+            </div>
+            <div class="band-item">
+              <div class="band-name">The Basement Band ft. Srijan Bikram Gyawali</div>
+              <div class="band-description">High-energy performances</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <h3>🎤 Live Music Phase</h3>
+          <p>Get ready for two hours of pure Nepali energy! The DMV's favorite bands will light up the stage with iconic hits and crowd favorites — bringing the sound of home to Fairfax.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>🎧 DJ Phase</h3>
+          <p>After the bands wrap up, the lights go low and the beats take over. Our Basecamp Beats DJ will spin the best Nepali hits to keep everyone on the dance floor till late.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>🤝 Networking Phase</h3>
+          <p>Designed to bring together young Nepali professionals, students, and creatives to connect, share stories, and build meaningful relationships. It's all about our generation coming together.</p>
+        </div>
+
+        <div class="faq-card">
+          <h3>📋 Important Details</h3>
+          <ul>
+            <li><strong>Age:</strong> 18+</li>
+            <li><strong>Parking:</strong> Free</li>
+            <li><strong>Food & Drinks:</strong> Available</li>
+            <li><strong>Door Sales:</strong> Limited (get tickets early!)</li>
+          </ul>
+        </div>
+
+        <div class="faq-card highlight-card">
+          <h3>⚠️ Pro Tip</h3>
+          <p>Tickets may sell out or increase in price at the door. Secure your spot early!</p>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <h3>Music</h3>
-      <p>Experience live performances, DJs, and the best of Nepali beats.</p>
+  </section>
+
+  <!-- Mission Section -->
+  <section id="about" class="mission-section">
+    <div class="mission-content">
+      <h2>Our Mission</h2>
+      <p class="mission-text">We're creating a common space for Nepali youth to connect through the vibrant sounds of our music, the richness of our culture, and the energy of our community. Basecamp Beats brings together young Nepali professionals, students, and creatives to celebrate our heritage while building meaningful connections in a contemporary setting.</p>
+      <div class="mission-values">
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h3>Connect</h3>
+          <p>Building bridges within our community</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🎵</span>
+          <h3>Celebrate</h3>
+          <p>Experience vibrant Nepali music and beats</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🎨</span>
+          <h3>Preserve</h3>
+          <p>Honor our rich cultural heritage</p>
     </div>
-    <div class="card">
-      <h3>Culture</h3>
-      <p>Celebrate Nepali culture, traditions, and unforgettable moments together.</p>
+    </div>
     </div>
   </section>
 
@@ -591,3 +1339,4 @@
   </footer>
 </body>
 </html>
+
