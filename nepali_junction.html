@@ -18,7 +18,7 @@
     }
     .bingo-board {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       grid-gap: 12px;
       max-width: 600px;
       margin: 40px auto;
@@ -141,8 +141,8 @@
       gridQuestions = state.questions;
       answers = state.answers;
     } else {
-      gridQuestions = shuffle([...questions]).slice(0, 25);
-      answers = Array(5).fill(0).map(() => Array(5).fill(""));
+      gridQuestions = shuffle([...questions]).slice(0, 16);
+      answers = Array(4).fill(0).map(() => Array(4).fill(""));
     }
 
     const board = document.getElementById('bingoBoard');
@@ -151,9 +151,9 @@
     function renderBoard() {
       board.innerHTML = '';
       cellRefs = [];
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          const idx = i * 5 + j;
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          const idx = i * 4 + j;
           const cell = document.createElement('div');
           cell.className = 'bingo-cell';
           const q = document.createElement('div');
@@ -174,8 +174,15 @@
           cell.appendChild(input);
           board.appendChild(cell);
           cellRefs.push(cell);
+          
+          // Apply saved state colors on load
+          if (answers[i][j].trim() !== "") {
+            updateCellState(i, j, cell, input);
+          }
         }
       }
+      // Check for existing bingos after board is rendered
+      checkBingo();
     }
 
     function updateCellState(i, j, cell, input) {
@@ -197,8 +204,8 @@
     function resetGame() {
       if (confirm('Are you sure you want to reset the game? This will clear all your answers.')) {
         localStorage.removeItem('bingoState');
-        gridQuestions = shuffle([...questions]).slice(0, 25);
-        answers = Array(5).fill(0).map(() => Array(5).fill(""));
+        gridQuestions = shuffle([...questions]).slice(0, 16);
+        answers = Array(4).fill(0).map(() => Array(4).fill(""));
         renderBoard();
         checkBingo();
       }
@@ -208,38 +215,52 @@
     document.getElementById('resetButton').addEventListener('click', resetGame);
 
     function checkBingo() {
-      // Remove all bingo highlights
-      cellRefs.forEach(cell => cell.classList.remove('bingo'));
+      // First remove all bingo highlights
+      cellRefs.forEach(cell => {
+        cell.classList.remove('bingo');
+        // Make sure answered cells stay yellow
+        if (cell.querySelector('input').value.trim() !== "") {
+          cell.classList.add('answered');
+        }
+      });
+
       let bingoCount = 0;
+
+      // Helper function to mark cells as bingo
+      const markBingo = (indices) => {
+        indices.forEach(idx => cellRefs[idx].classList.add('bingo'));
+        bingoCount++;
+      };
+
       // Check rows
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 4; i++) {
         if (answers[i].every(ans => ans.trim() !== "")) {
-          bingoCount++;
-          for (let j = 0; j < 5; j++) cellRefs[i*5 + j].classList.add('bingo');
+          const rowIndices = Array.from({length: 4}, (_, j) => i * 4 + j);
+          markBingo(rowIndices);
         }
       }
+
       // Check columns
-      for (let j = 0; j < 5; j++) {
-        let col = [];
-        for (let i = 0; i < 5; i++) col.push(answers[i][j]);
-        if (col.every(ans => ans.trim() !== "")) {
-          bingoCount++;
-          for (let i = 0; i < 5; i++) cellRefs[i*5 + j].classList.add('bingo');
+      for (let j = 0; j < 4; j++) {
+        const column = Array.from({length: 4}, (_, i) => answers[i][j]);
+        if (column.every(ans => ans.trim() !== "")) {
+          const colIndices = Array.from({length: 4}, (_, i) => i * 4 + j);
+          markBingo(colIndices);
         }
       }
-      // Check diagonals
-      let diag1 = [], diag2 = [];
-      for (let i = 0; i < 5; i++) {
-        diag1.push(answers[i][i]);
-        diag2.push(answers[i][4-i]);
+
+      // Check main diagonal (top-left to bottom-right)
+      const mainDiag = Array.from({length: 4}, (_, i) => answers[i][i]);
+      if (mainDiag.every(ans => ans.trim() !== "")) {
+        const diagIndices = Array.from({length: 4}, (_, i) => i * 4 + i);
+        markBingo(diagIndices);
       }
-      if (diag1.every(ans => ans.trim() !== "")) {
-        bingoCount++;
-        for (let i = 0; i < 5; i++) cellRefs[i*5 + i].classList.add('bingo');
-      }
-      if (diag2.every(ans => ans.trim() !== "")) {
-        bingoCount++;
-        for (let i = 0; i < 5; i++) cellRefs[i*5 + (4-i)].classList.add('bingo');
+
+      // Check anti-diagonal (top-right to bottom-left)
+      const antiDiag = Array.from({length: 4}, (_, i) => answers[i][3 - i]);
+      if (antiDiag.every(ans => ans.trim() !== "")) {
+        const antiDiagIndices = Array.from({length: 4}, (_, i) => i * 4 + (3 - i));
+        markBingo(antiDiagIndices);
       }
       document.getElementById('bingoScore').textContent = bingoCount;
     }
