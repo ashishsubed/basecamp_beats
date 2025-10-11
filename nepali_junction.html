@@ -83,6 +83,17 @@
   <h1>Nepali Junction Bingo</h1>
   <div class="score">Bingo Score: <span id="bingoScore">0</span></div>
   <div class="bingo-board" id="bingoBoard"></div>
+  <button id="resetButton" style="
+    background-color: #FF4646;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-weight: bold;">
+    Reset Game
+  </button>
   <script>
     const questions = [
       "Find someone who is a software engineer",
@@ -120,10 +131,21 @@
       }
       return arr;
     }
-    const gridQuestions = shuffle([...questions]).slice(0, 25);
+    // Load saved state from localStorage
+    let savedState = localStorage.getItem('bingoState');
+    let gridQuestions;
+    let answers;
+
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      gridQuestions = state.questions;
+      answers = state.answers;
+    } else {
+      gridQuestions = shuffle([...questions]).slice(0, 25);
+      answers = Array(5).fill(0).map(() => Array(5).fill(""));
+    }
 
     const board = document.getElementById('bingoBoard');
-    let answers = Array(5).fill(0).map(() => Array(5).fill(""));
     let cellRefs = [];
 
     function renderBoard() {
@@ -146,6 +168,7 @@
             answers[i][j] = e.target.value;
             updateCellState(i, j, cell, input);
             checkBingo();
+            saveState(); // Save state after each input
           });
           cell.appendChild(q);
           cell.appendChild(input);
@@ -162,6 +185,27 @@
         cell.classList.remove('answered');
       }
     }
+
+    function saveState() {
+      const state = {
+        questions: gridQuestions,
+        answers: answers
+      };
+      localStorage.setItem('bingoState', JSON.stringify(state));
+    }
+
+    function resetGame() {
+      if (confirm('Are you sure you want to reset the game? This will clear all your answers.')) {
+        localStorage.removeItem('bingoState');
+        gridQuestions = shuffle([...questions]).slice(0, 25);
+        answers = Array(5).fill(0).map(() => Array(5).fill(""));
+        renderBoard();
+        checkBingo();
+      }
+    }
+
+    // Add reset button event listener
+    document.getElementById('resetButton').addEventListener('click', resetGame);
 
     function checkBingo() {
       // Remove all bingo highlights
