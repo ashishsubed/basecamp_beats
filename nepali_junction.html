@@ -47,7 +47,7 @@
     }
     
     header {
-      padding: 40px 20px 20px;
+      padding: 40px 20px 10px;
       animation: fadeIn 0.8s ease-in;
     }
     
@@ -101,10 +101,23 @@
     }
     
     .subtitle {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.1rem;
-      font-weight: 300;
-      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin: 30px auto 35px;
+      background: rgba(0, 210, 255, 0.1);
+      padding: 15px 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      display: block;
+      max-width: 90%;
+      width: fit-content;
+      text-align: center;
+    }
+    
+    .subtitle strong {
+      color: #63e6be;
+      font-weight: 700;
     }
     
     .score-container {
@@ -331,50 +344,105 @@
     
     @media (max-width: 768px) {
       .back-button {
-        top: 20px;
-        left: 20px;
-        font-size: 1rem;
+        top: 15px;
+        left: 15px;
+        font-size: 0.9rem;
         padding: 6px 12px;
       }
       
       h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         margin-top: 50px;
       }
       
       .subtitle {
         font-size: 1rem;
+        padding: 12px 20px;
+        margin: 25px 10px 30px;
       }
       
       .score-container {
-        padding: 16px 30px;
+        padding: 14px 24px;
+        margin: 20px auto;
       }
       
       .score {
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
       
       .score-number {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+      }
+      
+      .bingo-container {
+        padding: 0 10px;
       }
       
       .bingo-board {
-        gap: 10px;
-        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        grid-template-columns: repeat(4, 1fr);
+        margin: 30px auto;
       }
       
       .bingo-cell {
-        min-height: 140px;
-        padding: 14px 10px;
+        min-height: 110px;
+        padding: 10px 6px;
+        border-radius: 12px;
+        gap: 8px;
       }
       
       .bingo-question {
-        font-size: 0.9rem;
+        font-size: 0.75rem;
+        line-height: 1.3;
       }
       
       .bingo-input {
-        padding: 8px 10px;
+        padding: 6px 8px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+      
+      .button-group {
+        margin-top: 30px;
+      }
+      
+      .btn {
+        padding: 12px 24px;
         font-size: 0.95rem;
+      }
+    }
+    
+    @media (max-width: 390px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .subtitle {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+      }
+      
+      .score-container {
+        padding: 12px 20px;
+      }
+      
+      .bingo-board {
+        gap: 6px;
+      }
+      
+      .bingo-cell {
+        min-height: 100px;
+        padding: 8px 4px;
+      }
+      
+      .bingo-question {
+        font-size: 0.7rem;
+        line-height: 1.2;
+      }
+      
+      .bingo-input {
+        padding: 5px 6px;
+        font-size: 0.8rem;
       }
     }
     
@@ -394,13 +462,14 @@
   
   <header>
     <h1>🎯 Networking Bingo</h1>
-    <p class="subtitle">Connect with new people and complete your bingo card!</p>
   </header>
   
   <div class="score-container">
     <span class="score">Bingo Score:</span>
     <span class="score-number" id="bingoScore">0</span>
   </div>
+  
+  <p class="subtitle"><strong>Find someone who...</strong> (complete each sentence and write their name)</p>
   
   <div class="bingo-container">
     <div class="bingo-board" id="bingoBoard"></div>
@@ -413,31 +482,31 @@
   </div>
   <script>
     const questions = [
-      "Find someone who is a software engineer",
-      "Find someone who has been to Europe",
-      "Find someone who speaks 3+ languages",
-      "Find someone who plays a musical instrument",
-      "Find someone who has run a marathon",
-      "Find someone who is the eldest sibling",
-      "Find someone who has visited Nepal in the last year",
-      "Find someone who can cook momo",
-      "Find someone who has attended a Nepali wedding",
-      "Find someone who is a student",
-      "Find someone who has a pet",
-      "Find someone who has performed on stage",
-      "Find someone who has lived in more than 3 countries",
-      "Find someone who is wearing traditional attire",
-      "Find someone who is left-handed",
-      "Find someone who has organized an event",
-      "Find someone who is a vegetarian",
-      "Find someone who has climbed a mountain",
-      "Find someone who is a teacher",
-      "Find someone who has a birthday in October",
-      "Find someone who has published a book",
-      "Find someone who is a dancer",
-      "Find someone who has a twin",
-      "Find someone who has donated blood",
-      "Find someone who is a photographer"
+      "...is a software engineer?",
+      "...has been to Europe?",
+      "...speaks 3+ languages?",
+      "...plays a musical instrument?",
+      "...has run a marathon?",
+      "...is the eldest sibling?",
+      "...visited Nepal this year?",
+      "...can cook momo?",
+      "...attended a Nepali wedding?",
+      "...is a student?",
+      "...has a pet?",
+      "...has performed on stage?",
+      "...lived in 3+ countries?",
+      "...is wearing traditional attire?",
+      "...is left-handed?",
+      "...has organized an event?",
+      "...is a vegetarian?",
+      "...has climbed a mountain?",
+      "...is a teacher?",
+      "...has a birthday in October?",
+      "...has published a book?",
+      "...is a dancer?",
+      "...has a twin?",
+      "...has donated blood?",
+      "...is a photographer?"
     ];
 
     // Shuffle questions for randomness
