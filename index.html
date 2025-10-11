@@ -1,1 +1,128 @@
-<p>Welcome to Basecamp Beats12334!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basecamp Beats</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #1B0F3B, #000814);
+      color: white;
+      text-align: center;
+    }
+    header {
+      padding: 30px 10px;
+    }
+    header img {
+      width: 150px;
+    }
+    h1 {
+      color: #FFD166;
+      font-size: 2.5rem;
+      margin: 10px 0;
+    }
+    p.slogan {
+      color: #ccc;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+    .hero {
+      margin: 30px auto;
+      max-width: 600px;
+      padding: 0 15px;
+    }
+    .hero img {
+      width: 100%;
+      border-radius: 15px;
+      border: 2px solid #555;
+      margin-bottom: 20px;
+    }
+    .hero button {
+      background-color: #FFD166;
+      color: #000;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .hero button:hover {
+      background-color: #FFE066;
+    }
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin: 40px auto;
+      max-width: 900px;
+      padding: 0 15px;
+    }
+    .card {
+      background-color: #121029;
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid #FFD166;
+    }
+    .card h3 {
+      color: #FFD166;
+      margin-bottom: 10px;
+    }
+    .card p {
+      color: #ccc;
+      font-size: 0.95rem;
+    }
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      color: #aaa;
+      font-size: 0.85rem;
+    }
+    @media (min-width: 700px) {
+      .cards {
+        flex-direction: row;
+        justify-content: center;
+      }
+      .card {
+        width: 30%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/logo.webp" alt="Basecamp Beats Logo">
+    <h1>Basecamp Beats</h1>
+    <p class="slogan">Where Nepali beats meet friendship, culture, and unforgettable nights.</p>
+  </header>
+
+  <section class="hero">
+    <img src="/event-poster.webp" alt="Nepali Junction Event Poster">
+    <h2 style="color:#FFD166;">Upcoming Event</h2>
+    <p>Nepali Junction – October 17th, Tandoori Fairfax, VA</p>
+    <button><a href="https://www.xudustore.com/event-details-registration/nepali-junction">Get Tickets</a></button>
+  </section>
+
+  <section class="cards">
+    <div class="card">
+      <h3>Networking</h3>
+      <p>Connect with Nepali youth and community leaders through engaging events.</p>
+    </div>
+    <div class="card">
+      <h3>Music</h3>
+      <p>Experience live performances, DJs, and the best of Nepali beats.</p>
+    </div>
+    <div class="card">
+      <h3>Culture</h3>
+      <p>Celebrate Nepali culture, traditions, and unforgettable moments together.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Basecamp Beats. All rights reserved.</p>
+    <p>Follow us on social media for upcoming events and updates.</p>
+  </footer>
+</body>
+</html>
