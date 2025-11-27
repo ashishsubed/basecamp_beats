@@ -19,13 +19,20 @@
     body {
       margin: 0;
       font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0a1128 0%, #1a2332 40%, #0d1b2a 100%);
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 25%, #0f1729 50%, #1e2541 75%, #0a0e27 100%);
+      background-size: 400% 400%;
       background-attachment: fixed;
+      animation: gradientBg 15s ease infinite;
       color: white;
       text-align: center;
       line-height: 1.6;
       overflow-x: hidden;
       position: relative;
+    }
+    
+    @keyframes gradientBg {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     
     body::before {
@@ -36,11 +43,18 @@
       right: 0;
       bottom: 0;
       background: 
-        radial-gradient(circle at 20% 30%, rgba(0, 210, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(52, 152, 219, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(99, 230, 190, 0.04) 0%, transparent 50%);
+        radial-gradient(circle at 20% 30%, rgba(0, 210, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(99, 230, 190, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+      animation: pulseGlow 8s ease-in-out infinite;
       pointer-events: none;
       z-index: 0;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
     }
     
     body > * {
@@ -97,35 +111,50 @@
       transform: translate(-50%, -50%);
       width: 180px;
       height: 180px;
-      background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 70%);
       border-radius: 50%;
       animation: pulse 3s ease-in-out infinite;
     }
     
     @keyframes pulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+      0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.6;
+        box-shadow: 0 0 50px rgba(0, 210, 255, 0.4);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.3); 
+        opacity: 1;
+        box-shadow: 0 0 80px rgba(0, 210, 255, 0.8);
+      }
     }
     
     header img {
       width: 140px;
       height: 140px;
       object-fit: contain;
-      filter: drop-shadow(0 8px 30px rgba(0, 210, 255, 0.4));
+      filter: drop-shadow(0 8px 30px rgba(0, 210, 255, 0.6)) drop-shadow(0 0 15px rgba(147, 51, 234, 0.4));
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
       position: relative;
       z-index: 1;
       display: block;
       border-radius: 25%;
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.05) 0%, rgba(99, 230, 190, 0.05) 100%);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(147, 51, 234, 0.08) 50%, rgba(99, 230, 190, 0.1) 100%);
+      background-size: 200% 200%;
+      animation: logoBgShift 8s ease infinite;
       padding: 10px;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
+    }
+    
+    @keyframes logoBgShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     
     header img:hover {
-      transform: scale(1.1) rotate(5deg);
-      filter: drop-shadow(0 12px 40px rgba(0, 210, 255, 0.7));
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.1) 0%, rgba(99, 230, 190, 0.1) 100%);
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 12px 50px rgba(0, 210, 255, 1)) drop-shadow(0 0 30px rgba(147, 51, 234, 0.8));
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.2) 0%, rgba(147, 51, 234, 0.15) 50%, rgba(99, 230, 190, 0.2) 100%);
     }
     
     .title-wrapper {
@@ -139,8 +168,8 @@
     
     h1 {
       font-family: 'Righteous', 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 50%, #00d2ff 100%);
-      background-size: 200% auto;
+      background: linear-gradient(135deg, #00d2ff 0%, #a78bfa 25%, #ec4899 50%, #63e6be 75%, #00d2ff 100%);
+      background-size: 300% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -150,9 +179,10 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       text-shadow: none;
-      animation: gradientShift 8s ease infinite;
+      animation: gradientShift 6s ease infinite;
       position: relative;
       display: inline-block;
+      filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.5));
     }
     
     h1::before {
@@ -163,14 +193,24 @@
       transform: translateX(-50%);
       width: 60%;
       height: 4px;
-      background: linear-gradient(90deg, transparent, #00d2ff, #63e6be, transparent);
+      background: linear-gradient(90deg, transparent, #00d2ff, #a78bfa, #ec4899, #63e6be, transparent);
+      background-size: 200% 100%;
       border-radius: 2px;
-      animation: lineGlow 2s ease-in-out infinite;
+      animation: lineGlow 3s ease-in-out infinite;
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
     }
     
     @keyframes lineGlow {
-      0%, 100% { opacity: 0.5; width: 60%; }
-      50% { opacity: 1; width: 80%; }
+      0%, 100% { 
+        opacity: 0.6; 
+        width: 60%; 
+        background-position: 0% 50%;
+      }
+      50% { 
+        opacity: 1; 
+        width: 85%; 
+        background-position: 100% 50%;
+      }
     }
     
     @keyframes gradientShift {
@@ -229,15 +269,38 @@
       border-radius: 20px;
       box-shadow: 
         0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 210, 255, 0.15);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+        0 0 40px rgba(0, 210, 255, 0.3),
+        0 0 80px rgba(147, 51, 234, 0.2),
+        0 0 0 1px rgba(0, 210, 255, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      animation: posterGlow 4s ease-in-out infinite;
+    }
+    
+    @keyframes posterGlow {
+      0%, 100% { 
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(0, 210, 255, 0.3),
+          0 0 80px rgba(147, 51, 234, 0.2),
+          0 0 0 1px rgba(0, 210, 255, 0.3);
+      }
+      50% { 
+        box-shadow: 
+          0 20px 60px rgba(0, 0, 0, 0.5),
+          0 0 60px rgba(0, 210, 255, 0.5),
+          0 0 100px rgba(147, 51, 234, 0.4),
+          0 0 0 1px rgba(0, 210, 255, 0.5);
+      }
     }
     
     .event-poster:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px) scale(1.02);
       box-shadow: 
-        0 25px 70px rgba(0, 210, 255, 0.25),
-        0 0 0 1px rgba(0, 210, 255, 0.3);
+        0 30px 80px rgba(0, 210, 255, 0.4),
+        0 0 80px rgba(0, 210, 255, 0.6),
+        0 0 120px rgba(147, 51, 234, 0.5),
+        0 0 0 2px rgba(0, 210, 255, 0.6);
     }
     
     .event-info {
@@ -275,20 +338,40 @@
     }
     
     .detail-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(0, 210, 255, 0.2);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(147, 51, 234, 0.05) 100%);
+      border: 1px solid rgba(0, 210, 255, 0.3);
       border-radius: 15px;
       padding: 20px;
       display: flex;
       align-items: center;
       gap: 15px;
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .detail-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .detail-item:hover::before {
+      left: 100%;
     }
     
     .detail-item:hover {
-      background: rgba(0, 210, 255, 0.05);
-      border-color: rgba(0, 210, 255, 0.4);
-      transform: translateY(-3px);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%);
+      border-color: rgba(0, 210, 255, 0.6);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 
+        0 10px 30px rgba(0, 210, 255, 0.3),
+        0 0 40px rgba(147, 51, 234, 0.2);
     }
     
     .detail-icon {
@@ -476,27 +559,49 @@
     }
     
     .top-nav-tertiary {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(99, 230, 190, 0.15) 100%);
       color: #ffffff;
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(147, 51, 234, 0.5);
       box-shadow: 
-        0 4px 15px rgba(255, 255, 255, 0.1),
+        0 4px 20px rgba(147, 51, 234, 0.3),
+        0 0 30px rgba(99, 230, 190, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .top-nav-tertiary::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    .top-nav-tertiary:hover::after {
+      width: 300px;
+      height: 300px;
     }
     
     .top-nav-tertiary:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-      border-color: rgba(255, 255, 255, 0.6);
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.35) 0%, rgba(99, 230, 190, 0.25) 100%);
+      border-color: rgba(147, 51, 234, 0.8);
       color: #ffffff;
-      transform: translateY(-4px) scale(1.02);
+      transform: translateY(-6px) scale(1.05);
       box-shadow: 
-        0 8px 25px rgba(255, 255, 255, 0.2),
+        0 10px 40px rgba(147, 51, 234, 0.6),
+        0 0 50px rgba(99, 230, 190, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
     
     .top-nav-tertiary:active {
-      transform: translateY(-2px) scale(1.01);
+      transform: translateY(-3px) scale(1.02);
     }
     
     .button-group {
@@ -676,18 +781,39 @@
     }
     
     .faq-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.06) 0%, rgba(147, 51, 234, 0.04) 100%);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 30px;
-      border: 1px solid rgba(0, 210, 255, 0.15);
-      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .faq-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    
+    .faq-card:hover::before {
+      opacity: 1;
     }
     
     .faq-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(0, 210, 255, 0.3);
-      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(0, 210, 255, 0.5);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.12) 0%, rgba(147, 51, 234, 0.08) 100%);
+      box-shadow: 
+        0 15px 40px rgba(0, 210, 255, 0.25),
+        0 0 50px rgba(147, 51, 234, 0.15);
     }
     
     .faq-card h3 {
@@ -775,6 +901,193 @@
       color: #FF6B6B;
     }
     
+    /* Previous Events Section */
+    .previous-events-section {
+      margin: 80px auto;
+      max-width: 1100px;
+      padding: 0 20px;
+      scroll-margin-top: 80px;
+    }
+    
+    .previous-events-container h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 15px;
+      font-family: 'Righteous', sans-serif;
+    }
+    
+    .section-subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.1rem;
+      margin-bottom: 50px;
+      font-weight: 300;
+      font-style: italic;
+    }
+    
+    .past-event-card {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 40px;
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(147, 51, 234, 0.05) 50%, rgba(99, 230, 190, 0.06) 100%);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      padding: 35px;
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .past-event-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00d2ff 0%, #a78bfa 50%, #ec4899 100%);
+      background-size: 200% 100%;
+      animation: borderShimmer 3s linear infinite;
+    }
+    
+    @keyframes borderShimmer {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    
+    .past-event-card:hover {
+      transform: translateY(-10px) scale(1.01);
+      border-color: rgba(0, 210, 255, 0.6);
+      box-shadow: 
+        0 20px 60px rgba(0, 210, 255, 0.3),
+        0 0 80px rgba(147, 51, 234, 0.2);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.12) 0%, rgba(147, 51, 234, 0.08) 50%, rgba(99, 230, 190, 0.1) 100%);
+    }
+    
+    .past-event-image {
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    
+    .past-event-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 15px;
+      transition: transform 0.4s ease;
+    }
+    
+    .past-event-card:hover .past-event-image img {
+      transform: scale(1.05);
+    }
+    
+    .event-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #0a1128;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+    
+    .past-event-content h3 {
+      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    
+    .past-event-date,
+    .past-event-location {
+      color: #63e6be;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .past-event-description {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin: 20px 0 25px;
+    }
+    
+    .past-event-highlights {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .highlight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 15px;
+      background: rgba(0, 210, 255, 0.05);
+      border-radius: 12px;
+      border-left: 3px solid #63e6be;
+    }
+    
+    .highlight-icon {
+      font-size: 1.5rem;
+      min-width: 30px;
+    }
+    
+    .highlight-content {
+      flex: 1;
+    }
+    
+    .highlight-label {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    
+    .highlight-value {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .view-more {
+      margin-top: 25px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.2) 0%, rgba(147, 51, 234, 0.15) 100%);
+      border: 2px solid rgba(0, 210, 255, 0.4);
+      border-radius: 50px;
+      color: #00d2ff;
+      font-weight: 700;
+      text-align: center;
+      font-size: 1rem;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+    
+    .past-event-card:hover .view-more {
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.3) 0%, rgba(147, 51, 234, 0.25) 100%);
+      border-color: rgba(0, 210, 255, 0.6);
+      color: #63e6be;
+      transform: translateX(5px);
+    }
+
     /* Mission Section */
     .mission-section {
       margin: 80px auto 80px;
@@ -1043,13 +1356,13 @@
       
       .hero {
         margin-bottom: 60px;
-        padding: 0 15px;
-      }
+      padding: 0 15px;
+    }
       
       .event-poster {
         max-width: 100%;
         margin-bottom: 30px;
-        border-radius: 15px;
+      border-radius: 15px;
       }
       
       .hero h2 {
@@ -1080,7 +1393,7 @@
       }
       
       .event-schedule {
-        padding: 20px;
+      padding: 20px;
         margin-bottom: 30px;
       }
       
@@ -1100,8 +1413,8 @@
       }
       
       .schedule-time {
-        font-size: 0.95rem;
-      }
+      font-size: 0.95rem;
+    }
       
       .event-notes {
         margin-top: 25px;
@@ -1194,6 +1507,71 @@
         font-size: 0.95rem;
       }
       
+      .previous-events-section {
+        margin: 70px auto 60px;
+      }
+      
+      .previous-events-container h2 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+      }
+      
+      .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 35px;
+        padding: 0 10px;
+      }
+      
+      .past-event-card {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        padding: 25px 20px;
+        border-radius: 20px;
+      }
+      
+      .past-event-content h3 {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+      }
+      
+      .past-event-date,
+      .past-event-location {
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+      
+      .past-event-description {
+        font-size: 1rem;
+        margin: 15px 0 20px;
+      }
+      
+      .event-badge {
+        font-size: 0.85rem;
+        padding: 6px 14px;
+      }
+      
+      .highlight-item {
+        padding: 12px;
+      }
+      
+      .highlight-icon {
+        font-size: 1.3rem;
+      }
+      
+      .highlight-label {
+        font-size: 0.8rem;
+      }
+      
+      .highlight-value {
+        font-size: 0.95rem;
+      }
+      
+      .view-more {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 0.95rem;
+      }
+      
       .mission-section {
         margin: 70px auto 60px;
       }
@@ -1272,17 +1650,14 @@
     <h1>Basecamp Beats</h1>
     </div>
     <div class="slogan-wrapper">
-    <p class="slogan">Where Nepali beats meet friendship, culture, and unforgettable nights.</p>
+    <p class="slogan">Where Nepali beats meet connection, culture, and unforgettable moments.</p>
     </div>
   </header>
 
   <!-- Navigation Links -->
   <nav class="top-nav">
-    <a href="https://www.xudustore.com/event-details-registration/nepali-junction" class="top-nav-btn top-nav-primary">
-      <span>🎟️</span> Get Tickets
-    </a>
-    <a href="/nepali_junction.html" class="top-nav-btn top-nav-secondary">
-      <span>🎮</span> Play Bingo
+    <a href="#previous-events" class="top-nav-btn top-nav-tertiary">
+      <span>🎉</span> Previous Events
     </a>
     <a href="#about" class="top-nav-btn top-nav-tertiary">
       <span>ℹ️</span> About Us
@@ -1290,17 +1665,17 @@
   </nav>
 
   <section class="hero">
-    <img src="/event-poster.webp" alt="Nepali Junction Event Poster" class="event-poster">
+    <img src="/event-2-poster.png" alt="Junction 2.0 Event Poster" class="event-poster">
     <div class="event-info">
-      <h2>Upcoming Event</h2>
-      <p class="event-description">Nepali Junction is a community networking and entertainment event featuring live Nepali bands, a DJ, and a social atmosphere to connect and celebrate.</p>
+      <h2>🎉 Junction 2.0</h2>
+      <p class="event-description">Back by popular demand! Join us for the second edition of our signature community event featuring live music, DJ, games, and an amazing social atmosphere.</p>
       
       <div class="event-details-grid">
         <div class="detail-item">
           <div class="detail-icon">📅</div>
           <div class="detail-content">
             <div class="detail-label">Date</div>
-            <div class="detail-value">October 17th, 2024</div>
+            <div class="detail-value">Friday, Dec 19, 2025</div>
           </div>
         </div>
         
@@ -1308,7 +1683,7 @@
           <div class="detail-icon">🕐</div>
           <div class="detail-content">
             <div class="detail-label">Time</div>
-            <div class="detail-value">7:00 PM - 12:30 AM</div>
+            <div class="detail-value">8:30 PM - 12:30 AM</div>
           </div>
         </div>
         
@@ -1316,27 +1691,33 @@
           <div class="detail-icon">📍</div>
           <div class="detail-content">
             <div class="detail-label">Location</div>
-            <div class="detail-value">Tandoori Fairfax, VA</div>
+            <div class="detail-value">The Garden Alexandria</div>
           </div>
         </div>
       </div>
       
       <div class="event-schedule">
         <div class="schedule-item">
-          <span class="schedule-icon">🤝</span>
-          <span class="schedule-label">Networking</span>
-          <span class="schedule-time">7-9 PM</span>
+          <span class="schedule-icon">🎲</span>
+          <span class="schedule-label">Social Hour & Games</span>
+          <span class="schedule-time">8:30-9:30 PM</span>
         </div>
         <div class="schedule-item">
           <span class="schedule-icon">🎸</span>
           <span class="schedule-label">Live Music</span>
-          <span class="schedule-time">9-11 PM</span>
+          <span class="schedule-time">9:30-10:30 PM</span>
         </div>
         <div class="schedule-item">
           <span class="schedule-icon">🎧</span>
           <span class="schedule-label">DJ</span>
-          <span class="schedule-time">11 PM-12:30 AM</span>
+          <span class="schedule-time">10:30 PM-12:30 AM</span>
         </div>
+      </div>
+      
+      <div class="event-notes">
+        <p><strong>Venue:</strong> 5380 Eisenhower Ave Suite C, Alexandria, VA 22304</p>
+        <p><strong>Age:</strong> 18+ | <strong>Parking:</strong> Free | <strong>Food & Drinks:</strong> Available</p>
+        <p class="ticket-warning">Limited tickets available - secure yours early!</p>
       </div>
     </div>
   </section>
@@ -1348,54 +1729,80 @@
       
       <div class="faq-grid">
         <div class="faq-card">
-          <h3>🎸 Who's Performing?</h3>
-          <p>Three of the best Nepali bands in the DMV area:</p>
-          <div class="band-list">
-            <div class="band-item">
-              <div class="band-name">Azstra Band</div>
-              <div class="band-description">Modern Nepali rock and soulful covers</div>
-            </div>
-            <div class="band-item">
-              <div class="band-name">Namakaya</div>
-              <div class="band-description">Groove, passion, and rhythm</div>
-            </div>
-            <div class="band-item">
-              <div class="band-name">The Basement Band ft. Srijan Bikram Gyawali</div>
-              <div class="band-description">High-energy performances</div>
-            </div>
-          </div>
+          <h3>🎲 Social Hour & Games</h3>
+          <p>Kick off the evening with interactive games, networking bingo, and casual mingling. Connect with fellow attendees in a fun, relaxed atmosphere before the music begins.</p>
+    </div>
+
+        <div class="faq-card">
+          <h3>🎤 Live Music</h3>
+          <p>Experience the best of Nepali music with live performances from talented artists. Get ready for an hour of pure energy with iconic hits and crowd favorites that will bring the sound of home to Alexandria.</p>
+    </div>
+
+        <div class="faq-card">
+          <h3>🎧 DJ Sets</h3>
+          <p>After live performances, our Basecamp Beats DJ takes over with 2 hours of non-stop Nepali hits, remixes, and party anthems to keep you dancing till midnight.</p>
         </div>
 
         <div class="faq-card">
-          <h3>🎤 Live Music Phase</h3>
-          <p>Get ready for two hours of pure Nepali energy! The DMV's favorite bands will light up the stage with iconic hits and crowd favorites — bringing the sound of home to Fairfax.</p>
-        </div>
-
-        <div class="faq-card">
-          <h3>🎧 DJ Phase</h3>
-          <p>After the bands wrap up, the lights go low and the beats take over. Our Basecamp Beats DJ will spin the best Nepali hits to keep everyone on the dance floor till late.</p>
-        </div>
-
-        <div class="faq-card">
-          <h3>🤝 Networking Phase</h3>
-          <p>Designed to bring together young Nepali professionals, students, and creatives to connect, share stories, and build meaningful relationships. It's all about our generation coming together.</p>
+          <h3>📍 Venue Details</h3>
+          <p><strong>The Garden Alexandria</strong> is a spacious, modern venue with excellent acoustics, a full bar, and comfortable seating areas. Free parking available on-site.</p>
+          <p style="margin-top: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.7);">5380 Eisenhower Ave Suite C, Alexandria, VA 22304</p>
         </div>
 
         <div class="faq-card">
           <h3>📋 Important Details</h3>
           <ul>
-            <li><strong>Age:</strong> 18+</li>
-            <li><strong>Parking:</strong> Free</li>
-            <li><strong>Food & Drinks:</strong> Available</li>
-            <li><strong>Door Sales:</strong> Limited (get tickets early!)</li>
+            <li><strong>Age:</strong> 18+ (Valid ID required)</li>
+            <li><strong>Parking:</strong> Free on-site parking</li>
+            <li><strong>Food & Drinks:</strong> Full bar and refreshments</li>
+            <li><strong>Dress Code:</strong> Smart casual</li>
           </ul>
         </div>
 
         <div class="faq-card highlight-card">
-          <h3>⚠️ Pro Tip</h3>
-          <p>Tickets may sell out or increase in price at the door. Secure your spot early!</p>
+          <h3>🎟️ Get Your Tickets</h3>
+          <p>Junction 2.0 is expected to sell out! Our first event was a huge success with 100+ attendees. Secure your spot early to avoid missing out.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Previous Events Section -->
+  <section id="previous-events" class="previous-events-section">
+    <div class="previous-events-container">
+      <h2>Previous Events</h2>
+      <p class="section-subtitle">Celebrating our successful events and amazing community moments</p>
+      
+      <a href="nepali-junction-2024.html" class="past-event-card past-event-link">
+        <div class="past-event-image">
+          <img src="/event-poster.webp" alt="Nepali Junction - First Event">
+          <div class="event-badge">Sold Out ✨</div>
+        </div>
+        <div class="past-event-content">
+          <h3>Nepali Junction</h3>
+          <p class="past-event-date">📅 October 17, 2024</p>
+          <p class="past-event-location">📍 Tandoori Fairfax, VA</p>
+          <p class="past-event-description">Our inaugural event brought together 170+ young Nepali professionals, students, and creatives for an unforgettable night of music, networking, and cultural celebration.</p>
+          
+          <div class="past-event-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">🎸</span>
+              <div class="highlight-content">
+                <div class="highlight-label">Featured Bands</div>
+                <div class="highlight-value">Azstra Band, Namakaya, The Basement Band</div>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🎉</span>
+              <div class="highlight-content">
+                <div class="highlight-label">Event Highlights</div>
+                <div class="highlight-value">170+ attended first event, 5+ hours of entertainment, networking bingo</div>
+              </div>
+            </div>
+          </div>
+          <div class="view-more">View Full Event Details →</div>
+        </div>
+      </a>
     </div>
   </section>
 
