@@ -12,6 +12,14 @@
       box-sizing: border-box;
     }
     
+    :root {
+      --bb-cyan: #00d2ff;
+      --bb-mint: #63e6be;
+      --bb-red: #e85d75;
+      --bb-red-glow: rgba(232, 93, 117, 0.35);
+      --bb-red-soft: rgba(220, 70, 90, 0.14);
+    }
+    
     html {
       scroll-behavior: smooth;
     }
@@ -19,7 +27,7 @@
     body {
       margin: 0;
       font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0a1128 0%, #1a2845 25%, #0d1b3a 50%, #162238 75%, #0a1128 100%);
+      background: linear-gradient(135deg, #0a1128 0%, #1a1a32 22%, #1f2438 45%, #1a1528 68%, #0d1b3a 88%, #0a1128 100%);
       background-size: 400% 400%;
       background-attachment: fixed;
       animation: gradientBg 20s ease infinite;
@@ -45,6 +53,7 @@
       background: 
         radial-gradient(circle at 20% 30%, rgba(0, 210, 255, 0.12) 0%, transparent 45%),
         radial-gradient(circle at 80% 70%, rgba(99, 230, 190, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 52% 82%, var(--bb-red-soft) 0%, transparent 46%),
         radial-gradient(circle at 50% 50%, rgba(52, 152, 219, 0.08) 0%, transparent 50%);
       animation: pulseGlow 10s ease-in-out infinite;
       pointer-events: none;
@@ -84,7 +93,7 @@
       top: 40px;
       right: 10%;
       font-size: 2rem;
-      color: rgba(99, 230, 190, 0.15);
+      color: rgba(232, 93, 117, 0.18);
       animation: float 6s ease-in-out infinite 3s;
     }
     
@@ -110,7 +119,7 @@
       transform: translate(-50%, -50%);
       width: 160px;
       height: 160px;
-      background: radial-gradient(circle, rgba(0, 210, 255, 0.2) 0%, rgba(99, 230, 190, 0.1) 60%, transparent 75%);
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.18) 0%, var(--bb-red-glow) 38%, rgba(99, 230, 190, 0.1) 62%, transparent 78%);
       border-radius: 50%;
       animation: pulse 4s ease-in-out infinite;
     }
@@ -130,7 +139,7 @@
       width: 140px;
       height: 140px;
       object-fit: contain;
-      filter: drop-shadow(0 8px 30px rgba(0, 210, 255, 0.5)) drop-shadow(0 0 10px rgba(99, 230, 190, 0.3));
+      filter: drop-shadow(0 8px 30px rgba(0, 210, 255, 0.45)) drop-shadow(0 0 12px var(--bb-red-glow)) drop-shadow(0 0 10px rgba(99, 230, 190, 0.28));
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
       position: relative;
       z-index: 1;
@@ -150,8 +159,8 @@
     
     header img:hover {
       transform: scale(1.1) rotate(3deg);
-      filter: drop-shadow(0 12px 40px rgba(0, 210, 255, 0.7)) drop-shadow(0 0 20px rgba(99, 230, 190, 0.5));
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.15) 0%, rgba(52, 152, 219, 0.1) 50%, rgba(99, 230, 190, 0.15) 100%);
+      filter: drop-shadow(0 12px 40px rgba(0, 210, 255, 0.65)) drop-shadow(0 0 18px var(--bb-red-glow)) drop-shadow(0 0 20px rgba(99, 230, 190, 0.45));
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.14) 0%, rgba(232, 93, 117, 0.1) 45%, rgba(99, 230, 190, 0.14) 100%);
     }
     
     .title-wrapper {
@@ -165,7 +174,7 @@
     
     h1 {
       font-family: 'Righteous', 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #00d2ff 0%, #3b82f6 30%, #63e6be 60%, #00d2ff 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, #3b82f6 22%, var(--bb-red) 48%, #63e6be 72%, #00d2ff 100%);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -179,7 +188,7 @@
       animation: gradientShift 8s ease infinite;
       position: relative;
       display: inline-block;
-      filter: drop-shadow(0 0 25px rgba(0, 210, 255, 0.4));
+      filter: drop-shadow(0 0 22px rgba(0, 210, 255, 0.38)) drop-shadow(0 0 35px var(--bb-red-glow));
     }
     
     h1::before {
@@ -190,7 +199,7 @@
       transform: translateX(-50%);
       width: 60%;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #00d2ff, #63e6be, #00d2ff, transparent);
+      background: linear-gradient(90deg, transparent, #00d2ff, var(--bb-red), #63e6be, #00d2ff, transparent);
       background-size: 200% 100%;
       border-radius: 2px;
       animation: lineGlow 3s ease-in-out infinite;
@@ -266,9 +275,10 @@
       border-radius: 20px;
       box-shadow: 
         0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 35px rgba(0, 210, 255, 0.25),
-        0 0 60px rgba(99, 230, 190, 0.15),
-        0 0 0 1px rgba(0, 210, 255, 0.3);
+        0 0 35px rgba(0, 210, 255, 0.22),
+        0 0 42px var(--bb-red-glow),
+        0 0 60px rgba(99, 230, 190, 0.14),
+        0 0 0 1px rgba(0, 210, 255, 0.28);
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       animation: posterGlow 5s ease-in-out infinite;
@@ -278,26 +288,29 @@
       0%, 100% { 
         box-shadow: 
           0 20px 60px rgba(0, 0, 0, 0.5),
-          0 0 35px rgba(0, 210, 255, 0.25),
-          0 0 60px rgba(99, 230, 190, 0.15),
-          0 0 0 1px rgba(0, 210, 255, 0.3);
+          0 0 35px rgba(0, 210, 255, 0.22),
+          0 0 42px var(--bb-red-glow),
+          0 0 60px rgba(99, 230, 190, 0.14),
+          0 0 0 1px rgba(0, 210, 255, 0.28);
       }
       50% { 
         box-shadow: 
           0 20px 60px rgba(0, 0, 0, 0.5),
-          0 0 50px rgba(0, 210, 255, 0.4),
-          0 0 80px rgba(99, 230, 190, 0.25),
-          0 0 0 1px rgba(0, 210, 255, 0.5);
+          0 0 50px rgba(0, 210, 255, 0.36),
+          0 0 58px rgba(232, 93, 117, 0.45),
+          0 0 80px rgba(99, 230, 190, 0.22),
+          0 0 0 1px rgba(0, 210, 255, 0.48);
       }
     }
     
     .event-poster:hover {
       transform: translateY(-8px) scale(1.01);
       box-shadow: 
-        0 30px 70px rgba(0, 210, 255, 0.35),
-        0 0 70px rgba(0, 210, 255, 0.5),
-        0 0 100px rgba(99, 230, 190, 0.3),
-        0 0 0 2px rgba(0, 210, 255, 0.6);
+        0 30px 70px rgba(0, 210, 255, 0.32),
+        0 0 55px rgba(232, 93, 117, 0.4),
+        0 0 70px rgba(0, 210, 255, 0.45),
+        0 0 100px rgba(99, 230, 190, 0.26),
+        0 0 0 2px rgba(0, 210, 255, 0.55);
     }
     
     .event-info {
@@ -306,7 +319,7 @@
     }
     
     .hero h2 {
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 42%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -329,14 +342,17 @@
     
     .event-details-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
       margin-bottom: 40px;
+      width: 100%;
+      max-width: 100%;
     }
     
     .detail-item {
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(52, 152, 219, 0.05) 100%);
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(232, 93, 117, 0.06) 50%, rgba(52, 152, 219, 0.05) 100%);
+      border: 1px solid rgba(0, 210, 255, 0.28);
+      box-shadow: inset 0 0 0 1px rgba(232, 93, 117, 0.08);
       border-radius: 15px;
       padding: 20px;
       display: flex;
@@ -363,8 +379,8 @@
     }
     
     .detail-item:hover {
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.15) 0%, rgba(99, 230, 190, 0.1) 100%);
-      border-color: rgba(0, 210, 255, 0.6);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.14) 0%, rgba(232, 93, 117, 0.1) 50%, rgba(99, 230, 190, 0.1) 100%);
+      border-color: rgba(0, 210, 255, 0.55);
       transform: translateY(-5px) scale(1.02);
       box-shadow: 
         0 10px 30px rgba(0, 210, 255, 0.3),
@@ -402,6 +418,30 @@
       padding: 25px;
       margin-bottom: 40px;
       border: 1px solid rgba(0, 210, 255, 0.15);
+    }
+    
+    .event-schedule-tba {
+      text-align: center;
+      border-color: rgba(232, 93, 117, 0.22);
+    }
+    
+    .schedule-tba-note {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 1.08rem;
+      line-height: 1.75;
+      margin: 0;
+    }
+    
+    .schedule-tba-note a {
+      color: var(--bb-cyan);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0, 210, 255, 0.35);
+    }
+    
+    .schedule-tba-note a:hover {
+      color: var(--bb-mint);
+      border-bottom-color: var(--bb-mint);
     }
     
     .schedule-item {
@@ -733,7 +773,7 @@
     }
     
     .card h3 {
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 40%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -763,7 +803,7 @@
     .faq-container h2 {
       text-align: center;
       font-size: 2.5rem;
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 45%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -906,10 +946,16 @@
       scroll-margin-top: 80px;
     }
     
+    .previous-events-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    
     .previous-events-container h2 {
       text-align: center;
       font-size: 2.5rem;
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 45%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -930,7 +976,7 @@
       display: grid;
       grid-template-columns: 1fr 1.2fr;
       gap: 40px;
-      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(52, 152, 219, 0.05) 50%, rgba(99, 230, 190, 0.06) 100%);
+      background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(232, 93, 117, 0.06) 40%, rgba(52, 152, 219, 0.05) 70%, rgba(99, 230, 190, 0.06) 100%);
       backdrop-filter: blur(15px);
       border-radius: 25px;
       padding: 35px;
@@ -950,7 +996,7 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #00d2ff, #63e6be, #00d2ff, transparent);
+      background: linear-gradient(90deg, transparent, #00d2ff, var(--bb-red), #63e6be, #00d2ff, transparent);
       background-size: 200% 100%;
       animation: borderShimmer 4s linear infinite;
     }
@@ -1001,7 +1047,7 @@
     }
     
     .past-event-content h3 {
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 40%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -1110,11 +1156,11 @@
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #00d2ff, #63e6be, transparent);
+      background: linear-gradient(90deg, transparent, #00d2ff, var(--bb-red), #63e6be, transparent);
     }
     
     .mission-content h2 {
-      background: linear-gradient(135deg, #00d2ff 0%, #63e6be 100%);
+      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 42%, #63e6be 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -1662,25 +1708,17 @@
   </nav>
 
   <section class="hero">
-    <img src="/event-2-poster.png" alt="Junction 2.0 Event Poster" class="event-poster">
+    <img src="/naya_nepal.png" alt="Naya Nepal × New Year Party — Basecamp Beats event poster" class="event-poster">
     <div class="event-info">
-      <h2>🎉 Junction 2.0</h2>
-      <p class="event-description">Back by popular demand! Join us for the second edition of our signature community event featuring live music, DJ, games, and an amazing social atmosphere.</p>
+      <h2>🇳🇵 Naya Nepal × New Year Party</h2>
+      <p class="event-description">Ignite the vibe. Define the future. Music, culture, community, and celebration — come vibe and vibrate with a nation’s new energy.</p>
       
       <div class="event-details-grid">
         <div class="detail-item">
           <div class="detail-icon">📅</div>
           <div class="detail-content">
             <div class="detail-label">Date</div>
-            <div class="detail-value">Friday, Dec 19, 2025</div>
-          </div>
-        </div>
-        
-        <div class="detail-item">
-          <div class="detail-icon">🕐</div>
-          <div class="detail-content">
-            <div class="detail-label">Time</div>
-            <div class="detail-value">8:30 PM - 12:30 AM</div>
+            <div class="detail-value">Coming soon</div>
           </div>
         </div>
         
@@ -1688,33 +1726,19 @@
           <div class="detail-icon">📍</div>
           <div class="detail-content">
             <div class="detail-label">Location</div>
-            <div class="detail-value">The Garden Alexandria</div>
+            <div class="detail-value">To be announced</div>
           </div>
         </div>
       </div>
       
-      <div class="event-schedule">
-        <div class="schedule-item">
-          <span class="schedule-icon">🎲</span>
-          <span class="schedule-label">Social Hour & Games</span>
-          <span class="schedule-time">8:30-9:30 PM</span>
-        </div>
-        <div class="schedule-item">
-          <span class="schedule-icon">🎸</span>
-          <span class="schedule-label">Live Music</span>
-          <span class="schedule-time">9:30-10:30 PM</span>
-        </div>
-        <div class="schedule-item">
-          <span class="schedule-icon">🎧</span>
-          <span class="schedule-label">DJ</span>
-          <span class="schedule-time">10:30 PM-12:30 AM</span>
-        </div>
+      <div class="event-schedule event-schedule-tba">
+        <p class="schedule-tba-note">Full lineup, schedule, and ticket link drop on Instagram — follow <a href="https://www.instagram.com/basecamp_beats/" target="_blank" rel="noopener noreferrer">@basecamp_beats</a> so you don’t miss it.</p>
       </div>
       
       <div class="event-notes">
-        <p><strong>Venue:</strong> 5380 Eisenhower Ave Suite C, Alexandria, VA 22304</p>
-        <p><strong>Age:</strong> 18+ | <strong>Parking:</strong> Free | <strong>Food & Drinks:</strong> Available</p>
-        <p class="ticket-warning">Limited tickets available - secure yours early!</p>
+        <p><strong>What to expect:</strong> Live music, DJ sets, games, and the same Basecamp Beats community energy you love — with a New Year twist.</p>
+        <p><strong>Details:</strong> 18+ event · Date &amp; venue announced soon</p>
+        <p class="ticket-warning">Tickets go on sale when dates are announced — follow us for the announcement!</p>
       </div>
     </div>
   </section>
@@ -1722,43 +1746,42 @@
   <!-- FAQ Section -->
   <section class="faq-section">
     <div class="faq-container">
-      <h2>Event Information</h2>
+      <h2>Naya Nepal · New Year Party</h2>
       
       <div class="faq-grid">
         <div class="faq-card">
           <h3>🎲 Social Hour & Games</h3>
-          <p>Kick off the evening with interactive games, networking bingo, and casual mingling. Connect with fellow attendees in a fun, relaxed atmosphere before the music begins.</p>
+          <p>We’re bringing back the Basecamp Beats formula: interactive games, networking energy, and time to connect before the night kicks into high gear.</p>
     </div>
 
         <div class="faq-card">
           <h3>🎤 Live Music</h3>
-          <p>Experience the best of Nepali music with live performances from talented artists. Get ready for an hour of pure energy with iconic hits and crowd favorites that will bring the sound of home to Alexandria.</p>
+          <p>Celebrate with live Nepali music and performances built for the dance floor — iconic hits, crowd favorites, and the sound of home in one room.</p>
     </div>
 
         <div class="faq-card">
           <h3>🎧 DJ Sets</h3>
-          <p>After live performances, our Basecamp Beats DJ takes over with 2 hours of non-stop Nepali hits, remixes, and party anthems to keep you dancing till midnight.</p>
+          <p>When the bands wrap, our DJ keeps the room moving with remixes, party anthems, and non-stop Nepali energy into the late night.</p>
         </div>
 
         <div class="faq-card">
-          <h3>📍 Venue Details</h3>
-          <p><strong>The Garden Alexandria</strong> is a spacious, modern venue with excellent acoustics, a full bar, and comfortable seating areas. Free parking available on-site.</p>
-          <p style="margin-top: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.7);">5380 Eisenhower Ave Suite C, Alexandria, VA 22304</p>
+          <h3>📍 Venue & Date</h3>
+          <p>We’re finalizing the perfect space for this New Year edition. <strong>Date and venue will be announced soon</strong> — same quality production you expect from Basecamp Beats.</p>
+          <p style="margin-top: 10px; font-size: 0.95rem; color: rgba(255,255,255,0.7);">Watch our Instagram for the official drop.</p>
         </div>
 
         <div class="faq-card">
-          <h3>📋 Important Details</h3>
+          <h3>📋 Good to Know</h3>
           <ul>
-            <li><strong>Age:</strong> 18+ (Valid ID required)</li>
-            <li><strong>Parking:</strong> Free on-site parking</li>
-            <li><strong>Food & Drinks:</strong> Full bar and refreshments</li>
-            <li><strong>Dress Code:</strong> Smart casual</li>
+            <li><strong>Age:</strong> 18+ (valid ID at the door)</li>
+            <li><strong>Parking &amp; bar:</strong> Details posted with venue announcement</li>
+            <li><strong>Dress code:</strong> Smart casual — come ready to celebrate</li>
           </ul>
         </div>
 
         <div class="faq-card highlight-card">
-          <h3>🎟️ Get Your Tickets</h3>
-          <p>Junction 2.0 is expected to sell out! Our first event was a huge success with 100+ attendees. Secure your spot early to avoid missing out.</p>
+          <h3>🎟️ Tickets</h3>
+          <p>Ticket link and pricing will go live when we announce date and location. Our last community nights filled fast — follow <a href="https://www.instagram.com/basecamp_beats/" target="_blank" rel="noopener noreferrer" style="color: #00d2ff; font-weight: 700;">@basecamp_beats</a> to get first word.</p>
         </div>
       </div>
     </div>
@@ -1770,6 +1793,37 @@
       <h2>Previous Events</h2>
       <p class="section-subtitle">Celebrating our successful events and amazing community moments</p>
       
+      <div class="previous-events-grid">
+      <div class="past-event-card">
+        <div class="past-event-image">
+          <img src="/event-2-poster.png" alt="Junction 2.0 — second Basecamp Beats community night">
+          <div class="event-badge">Thank you ✨</div>
+        </div>
+        <div class="past-event-content">
+          <h3>Junction 2.0</h3>
+          <p class="past-event-date">📅 December 19, 2025</p>
+          <p class="past-event-location">📍 The Garden Alexandria, VA</p>
+          <p class="past-event-description">Our second edition brought the community back for live music, DJ sets, games, and a full night of Nepali energy in Alexandria.</p>
+          
+          <div class="past-event-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">🎸</span>
+              <div class="highlight-content">
+                <div class="highlight-label">Format</div>
+                <div class="highlight-value">Social hour &amp; games, live performances, DJ until late</div>
+              </div>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🎉</span>
+              <div class="highlight-content">
+                <div class="highlight-label">Vibe</div>
+                <div class="highlight-value">100+ joined our first follow-up night — thank you for showing up</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <a href="nepali-junction-2024.html" class="past-event-card past-event-link">
         <div class="past-event-image">
           <img src="/event-poster.webp" alt="Nepali Junction - First Event">
@@ -1800,6 +1854,7 @@
           <div class="view-more">View Full Event Details →</div>
         </div>
       </a>
+      </div>
     </div>
   </section>
 
@@ -1845,7 +1900,7 @@
           <span class="social-name">TikTok</span>
         </a>
       </div>
-      <p class="footer-copyright">© 2025 Basecamp Beats. All rights reserved.</p>
+      <p class="footer-copyright">© 2026 Basecamp Beats. All rights reserved.</p>
     </div>
   </footer>
 </body>
