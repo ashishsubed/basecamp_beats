@@ -246,7 +246,7 @@
 
     /* Single transform timeline: ease in, then slow drift (Ken Burns–style) */
     .slide.is-on img {
-      animation: photoReveal 9s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+      animation: photoReveal 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
     }
 
     @keyframes photoReveal {
@@ -397,7 +397,7 @@
   <script>
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
     const GALLERY_LIST_URL = `${GALLERY_BASE}/images`;
-    const SLIDE_MS = 6000;
+    const SLIDE_MS = 4000;
     const REFRESH_MS = 30000;
 
     const stage = document.getElementById('stage');
