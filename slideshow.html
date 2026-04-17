@@ -4,428 +4,636 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Slideshow — Basecamp Beats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
       --bb-cyan: #00d2ff;
       --bb-mint: #63e6be;
-      --bb-red: #e85d75;
+      --bb-violet: rgba(150, 120, 220, 0.35);
+      --glow-cyan: rgba(0, 210, 255, 0.22);
+      --glow-mint: rgba(99, 230, 190, 0.14);
     }
-    
-    body {
-      margin: 0;
-      font-family: 'Poppins', 'Inter', -apple-system, sans-serif;
-      background: #000;
-      color: white;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .slideshow-container {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(160deg, #05050c 0%, #0a0b1e 35%, #100818 55%);
-    }
-    
-    .slide {
-      position: absolute;
-      width: 100%;
+
+    html, body {
       height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
+      overflow: hidden;
     }
-    
-    .slide.active {
-      opacity: 1;
-      z-index: 1;
+
+    body {
+      font-family: 'Inter', 'Poppins', system-ui, sans-serif;
+      background: #05050d;
+      color: #fff;
     }
-    
-    .slide img {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 210, 255, 0.3);
-    }
-    
-    .header {
+
+    /* Soft ambient glow — simple, no animation */
+    .ambient {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 20px 40px;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
     }
-    
-    .header h1 {
-      font-size: 1.5rem;
-      background: linear-gradient(135deg, #00d2ff 0%, var(--bb-red) 48%, #63e6be 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 800;
+
+    .ambient span {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(72px);
+      opacity: 0.55;
     }
-    
-    .counter {
-      background: rgba(0, 210, 255, 0.15);
-      padding: 8px 20px;
-      border-radius: 50px;
-      border: 1px solid rgba(0, 210, 255, 0.4);
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--bb-cyan);
+
+    .ambient .g1 {
+      width: min(85vw, 520px);
+      height: min(85vw, 520px);
+      top: -12%;
+      right: -8%;
+      background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 68%);
     }
-    
-    .controls {
-      position: fixed;
-      bottom: 40px;
+
+    .ambient .g2 {
+      width: min(70vw, 420px);
+      height: min(70vw, 420px);
+      bottom: -10%;
+      left: -6%;
+      background: radial-gradient(circle, var(--bb-violet) 0%, transparent 68%);
+    }
+
+    .ambient .g3 {
+      width: 45vmin;
+      height: 45vmin;
+      top: 42%;
       left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      display: flex;
-      gap: 15px;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 15px 25px;
-      border-radius: 50px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 210, 255, 0.3);
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, var(--glow-mint) 0%, transparent 72%);
+      opacity: 0.35;
     }
-    
-    .control-btn {
-      background: rgba(0, 210, 255, 0.2);
-      border: 1px solid rgba(0, 210, 255, 0.4);
-      color: var(--bb-cyan);
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.95rem;
-    }
-    
-    .control-btn:hover {
-      background: rgba(0, 210, 255, 0.3);
-      border-color: var(--bb-cyan);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
-    }
-    
-    .control-btn:active {
-      transform: translateY(0);
-    }
-    
+
     .loading-screen {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(160deg, #05050c 0%, #0a0b1e 35%, #100818 55%);
+      inset: 0;
+      z-index: 200;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-      transition: opacity 0.5s ease;
+      gap: 18px;
+      background: #05050d;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
     }
-    
-    .loading-screen.hidden {
-      opacity: 0;
+
+    .loading-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 40%, rgba(0, 210, 255, 0.08), transparent 60%);
       pointer-events: none;
     }
-    
+
+    .loading-screen.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     .loader {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(0, 210, 255, 0.2);
+      position: relative;
+      z-index: 1;
+      width: 44px;
+      height: 44px;
+      border: 2px solid rgba(0, 210, 255, 0.12);
       border-top-color: var(--bb-cyan);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 20px;
+      animation: spin 0.8s linear infinite;
+      box-shadow: 0 0 28px rgba(0, 210, 255, 0.2);
     }
-    
+
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    
+
     .loading-text {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.1rem;
+      position: relative;
+      z-index: 1;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      padding: 14px 22px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      pointer-events: none;
+      background: rgba(5, 6, 15, 0.42);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+      transition: opacity 0.38s ease, transform 0.38s ease;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .btn-delete {
+      font-family: inherit;
+      font-size: 0.78rem;
       font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 93, 117, 0.35);
+      background: rgba(20, 10, 16, 0.55);
+      color: rgba(255, 200, 205, 0.95);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 20px rgba(232, 93, 117, 0.08);
     }
-    
+
+    .btn-delete:hover:not(:disabled) {
+      background: rgba(232, 93, 117, 0.15);
+      border-color: rgba(232, 93, 117, 0.55);
+      color: #fff;
+      box-shadow: 0 0 24px rgba(232, 93, 117, 0.15);
+    }
+
+    .btn-delete:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .top-bar h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.88);
+      text-shadow: 0 0 32px rgba(0, 210, 255, 0.25);
+    }
+
+    .counter {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.55);
+      padding: 7px 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 210, 255, 0.18);
+      background: rgba(8, 12, 24, 0.65);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 24px rgba(0, 210, 255, 0.06);
+    }
+
+    .stage {
+      position: relative;
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(165deg, #06060f 0%, #0a0c18 48%, #050508 100%);
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.45);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 24px 48px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 1.1s step-end;
+      z-index: 1;
+    }
+
+    .slide.is-on {
+      opacity: 1;
+      visibility: visible;
+      z-index: 2;
+      transition: opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1),
+                  visibility 0s;
+    }
+
+    .slide img {
+      max-width: min(92vw, 1600px);
+      max-height: min(82vh, 900px);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.07),
+        0 28px 64px rgba(0, 0, 0, 0.5),
+        0 0 48px rgba(0, 210, 255, 0.12),
+        0 0 100px rgba(99, 230, 190, 0.06);
+    }
+
+    /* Single transform timeline: ease in, then slow drift (Ken Burns–style) */
+    .slide.is-on img {
+      animation: photoReveal 9s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    }
+
+    @keyframes photoReveal {
+      0% {
+        opacity: 0;
+        transform: scale(1.1);
+        filter: brightness(0.85);
+      }
+      14% {
+        opacity: 1;
+        transform: scale(1);
+        filter: brightness(1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.045);
+        filter: brightness(1);
+      }
+    }
+
     .no-photos {
+      position: relative;
+      z-index: 5;
       text-align: center;
-      padding: 40px;
+      padding: 40px 24px;
+      max-width: 400px;
     }
-    
+
     .no-photos h2 {
-      color: var(--bb-cyan);
-      font-size: 2rem;
-      margin-bottom: 15px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: rgba(0, 210, 255, 0.85);
+      margin-bottom: 10px;
+      text-shadow: 0 0 28px rgba(0, 210, 255, 0.2);
     }
-    
+
     .no-photos p {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      font-weight: 500;
     }
-    
+
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      z-index: 60;
+      background: rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      pointer-events: none;
+      box-shadow: 0 -8px 32px rgba(0, 210, 255, 0.06);
+      transition: opacity 0.38s ease, transform 0.38s ease;
+    }
+
+    /* Hide top bar + progress until mouse moves (JS adds .chrome-auto-hide on fine pointers only) */
+    body.chrome-auto-hide:not(.chrome-visible) header.top-bar,
+    body.chrome-auto-hide:not(.chrome-visible) #progressWrap {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    body.chrome-auto-hide:not(.chrome-visible) header.top-bar {
+      transform: translateY(-10px);
+    }
+
+    body.chrome-auto-hide:not(.chrome-visible) #progressWrap {
+      transform: translateY(8px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body.chrome-auto-hide:not(.chrome-visible) header.top-bar,
+      body.chrome-auto-hide:not(.chrome-visible) #progressWrap {
+        transform: none;
+      }
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 100%;
+      transform-origin: left center;
+      transform: scaleX(0);
+      background: linear-gradient(90deg, rgba(0, 210, 255, 0.85), rgba(99, 230, 190, 0.75));
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.45);
+    }
+
+    .progress-bar.is-running {
+      animation-name: progressFill;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes progressFill {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
     @media (max-width: 767px) {
-      .header {
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 10px;
+      .slide {
+        padding: 64px 12px 40px;
       }
-      
-      .header h1 {
-        font-size: 1.2rem;
-      }
-      
-      .controls {
-        bottom: 20px;
-        padding: 12px 20px;
-        gap: 10px;
-      }
-      
-      .control-btn {
-        padding: 10px 18px;
-        font-size: 0.85rem;
-      }
-      
       .slide img {
-        max-width: 95vw;
-        max-height: 80vh;
+        max-height: 78vh;
+        border-radius: 12px;
+      }
+      .top-bar {
+        padding: 12px 16px;
       }
     }
   </style>
 </head>
 <body>
+  <div class="ambient" aria-hidden="true">
+    <span class="g1"></span>
+    <span class="g2"></span>
+    <span class="g3"></span>
+  </div>
+
   <div class="loading-screen" id="loadingScreen">
     <div class="loader"></div>
-    <div class="loading-text">Loading photos...</div>
+    <div class="loading-text">Loading photos…</div>
   </div>
-  
-  <div class="header">
-    <h1>📸 Live Event Photos</h1>
-    <div class="counter">
-      <span id="currentSlide">0</span> / <span id="totalSlides">0</span>
+
+  <header class="top-bar">
+    <h1>Live photos</h1>
+    <div class="top-bar-actions">
+      <button type="button" class="btn-delete" id="deleteBtn" disabled title="Remove the photo currently on screen from the slideshow">
+        Remove photo
+      </button>
+      <div class="counter"><span id="currentSlide">0</span> / <span id="totalSlides">0</span></div>
     </div>
-  </div>
-  
-  <div class="slideshow-container" id="slideshowContainer">
-    <div class="no-photos" id="noPhotos" style="display: none;">
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="no-photos" id="noPhotos" hidden>
       <h2>No photos yet</h2>
-      <p>Photos will appear here as people upload them!</p>
+      <p>Images will appear here as guests upload them.</p>
     </div>
   </div>
-  
-  <div class="controls">
-    <button class="control-btn" id="prevBtn">← Previous</button>
-    <button class="control-btn" id="playPauseBtn">⏸ Pause</button>
-    <button class="control-btn" id="nextBtn">Next →</button>
+
+  <div class="progress" id="progressWrap" aria-hidden="true">
+    <div class="progress-bar" id="progressBar"></div>
   </div>
-  
+
   <script>
-    // Gallery Worker: list endpoint is GET /images (returns { images: [{ url, ... }] })
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
     const GALLERY_LIST_URL = `${GALLERY_BASE}/images`;
+    const SLIDE_MS = 6000;
+    const REFRESH_MS = 30000;
 
-    let photos = [];
-    let currentIndex = 0;
-    let isPlaying = true;
-    let slideInterval;
-    const SLIDE_DURATION = 5000;
-    const REFRESH_INTERVAL = 30000;
-    
-    const slideshowContainer = document.getElementById('slideshowContainer');
+    const stage = document.getElementById('stage');
     const loadingScreen = document.getElementById('loadingScreen');
     const noPhotos = document.getElementById('noPhotos');
     const currentSlideEl = document.getElementById('currentSlide');
     const totalSlidesEl = document.getElementById('totalSlides');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    
-    function imageUrlsFromApi(data) {
+    const progressBar = document.getElementById('progressBar');
+    const progressWrap = document.getElementById('progressWrap');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    let photos = [];
+    let index = 0;
+    let slideTimer = null;
+    let progressTimer = null;
+
+    function extractKeyFromUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      try {
+        const u = url.startsWith('http') ? new URL(url) : new URL(url, GALLERY_BASE);
+        const match = u.pathname.match(/\/image\/(.+)$/);
+        return match ? decodeURIComponent(match[1]) : '';
+      } catch {
+        return '';
+      }
+    }
+
+    function photosFromApi(data) {
       const items = data.images || [];
-      return items.map((item) => {
-        const path = item.url || `/image/${encodeURIComponent(item.key)}`;
-        return path.startsWith('http') ? path : new URL(path, GALLERY_BASE).href;
+      return items
+        .map((item) => {
+          const key = (item.key && String(item.key)) || extractKeyFromUrl(item.url);
+          const path = item.url || (key ? `/image/${encodeURIComponent(key)}` : '');
+          const url = path.startsWith('http') ? path : new URL(path, GALLERY_BASE).href;
+          return { key, url };
+        })
+        .filter((p) => p.key);
+    }
+
+    function updateCounter() {
+      currentSlideEl.textContent = photos.length ? index + 1 : 0;
+      totalSlidesEl.textContent = photos.length;
+      const cur = photos[index];
+      deleteBtn.disabled = !photos.length || !cur?.key;
+    }
+
+    function clearTimers() {
+      clearInterval(slideTimer);
+      slideTimer = null;
+      clearTimeout(progressTimer);
+      progressTimer = null;
+      progressBar.classList.remove('is-running');
+      progressBar.style.animationDuration = '';
+    }
+
+    function startProgress() {
+      progressBar.classList.remove('is-running');
+      void progressBar.offsetWidth;
+      progressBar.style.animationDuration = `${SLIDE_MS}ms`;
+      progressBar.classList.add('is-running');
+    }
+
+    function showIndex(i) {
+      const slides = stage.querySelectorAll('.slide');
+      if (!slides.length) return;
+      index = ((i % slides.length) + slides.length) % slides.length;
+      slides.forEach((el, j) => el.classList.toggle('is-on', j === index));
+      updateCounter();
+    }
+
+    function advance() {
+      if (photos.length <= 1) return;
+      showIndex(index + 1);
+      startProgress();
+    }
+
+    function startAuto() {
+      clearTimers();
+      progressWrap.style.visibility = photos.length > 1 ? 'visible' : 'hidden';
+      if (photos.length <= 1) {
+        return;
+      }
+      startProgress();
+      slideTimer = setInterval(advance, SLIDE_MS);
+    }
+
+    function buildSlides() {
+      stage.querySelectorAll('.slide').forEach((n) => n.remove());
+      noPhotos.hidden = true;
+
+      photos.forEach((photo, i) => {
+        const div = document.createElement('div');
+        div.className = 'slide' + (i === 0 ? ' is-on' : '');
+        div.dataset.key = photo.key;
+        const img = document.createElement('img');
+        img.src = photo.url;
+        img.alt = `Photo ${i + 1}`;
+        img.loading = i === 0 ? 'eager' : 'lazy';
+        div.appendChild(img);
+        stage.appendChild(div);
       });
+
+      index = 0;
+      updateCounter();
+      loadingScreen.classList.add('is-hidden');
+      startAuto();
+    }
+
+    function showEmpty() {
+      clearTimers();
+      progressWrap.style.visibility = 'hidden';
+      stage.querySelectorAll('.slide').forEach((n) => n.remove());
+      noPhotos.hidden = false;
+      loadingScreen.classList.add('is-hidden');
+      updateCounter();
     }
 
     async function fetchPhotos() {
       try {
-        const response = await fetch(GALLERY_LIST_URL);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        const nextUrls = imageUrlsFromApi(data);
+        const res = await fetch(GALLERY_LIST_URL);
+        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json();
+        const next = photosFromApi(data);
 
-        if (nextUrls.length === 0) {
+        if (next.length === 0) {
           photos = [];
-          slideshowContainer.querySelectorAll('.slide').forEach((el) => el.remove());
-          showNoPhotos();
-          loadingScreen.classList.add('hidden');
+          showEmpty();
           return;
         }
 
-        const slideCount = document.querySelectorAll('.slide').length;
-        photos = nextUrls;
+        const prevSig = photos.map((p) => p.key + '\t' + p.url).join('\0');
+        photos = next;
+        const changed = prevSig !== photos.map((p) => p.key + '\t' + p.url).join('\0');
+        const needsBuild = stage.querySelectorAll('.slide').length === 0 || changed;
 
-        if (slideCount === 0) {
-          initSlideshow();
-        } else if (nextUrls.length > slideCount) {
-          updateSlideshow();
-        } else if (nextUrls.length < slideCount) {
-          initSlideshow();
+        if (needsBuild) {
+          buildSlides();
+        } else {
+          updateCounter();
         }
-      } catch (error) {
-        console.error('Error fetching photos:', error);
-        if (photos.length === 0) {
-          showNoPhotos();
-        }
+      } catch (e) {
+        console.error(e);
+        if (!photos.length && !stage.querySelector('.slide')) showEmpty();
       }
     }
-    
-    function initSlideshow() {
-      slideshowContainer.querySelectorAll('.slide').forEach((el) => el.remove());
-      noPhotos.style.display = 'none';
 
-      photos.forEach((url, index) => {
-        const slide = document.createElement('div');
-        slide.className = 'slide';
-        if (index === 0) slide.classList.add('active');
-        
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = `Event photo ${index + 1}`;
-        
-        slide.appendChild(img);
-        slideshowContainer.appendChild(slide);
+    async function deleteCurrentPhoto() {
+      if (!photos.length) return;
+      const p = photos[index];
+      if (!p?.key) {
+        alert('Cannot delete this image (missing key).');
+        return;
+      }
+      if (!confirm('Remove this photo from the slideshow for everyone?')) return;
+
+      let pin = sessionStorage.getItem('bb_slideshow_delete_pin') || '';
+
+      const doDelete = async (headerPin) =>
+        fetch(`${GALLERY_BASE}/image/${encodeURIComponent(p.key)}`, {
+          method: 'DELETE',
+          headers: headerPin ? { 'X-Delete-Key': headerPin } : {},
+        });
+
+      let res = await doDelete(pin);
+      if (res.status === 401) {
+        sessionStorage.removeItem('bb_slideshow_delete_pin');
+        pin = prompt('Enter staff PIN to remove photos:') || '';
+        if (!pin) return;
+        sessionStorage.setItem('bb_slideshow_delete_pin', pin);
+        res = await doDelete(pin);
+      }
+
+      if (!res.ok) {
+        let msg = res.statusText;
+        try {
+          const j = await res.json();
+          if (j.error) msg = j.error;
+        } catch (_) {
+          try {
+            msg = await res.text();
+          } catch (_) {}
+        }
+        alert('Could not delete: ' + msg);
+        return;
+      }
+
+      await fetchPhotos();
+    }
+
+    deleteBtn.addEventListener('click', () => {
+      deleteCurrentPhoto();
+    });
+
+    (function initRegionChrome() {
+      const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+      if (!mq.matches) return;
+
+      document.body.classList.add('chrome-auto-hide');
+
+      const TOP_PX = 100;
+      const BOTTOM_PX = 56;
+      let lastY = window.innerHeight * 0.5;
+
+      function updateChromeVisibility() {
+        if (document.activeElement?.closest('header.top-bar')) {
+          document.body.classList.add('chrome-visible');
+          return;
+        }
+        const h = window.innerHeight || 1;
+        const inTop = lastY >= 0 && lastY < TOP_PX;
+        const inBottom = lastY > h - BOTTOM_PX;
+        document.body.classList.toggle('chrome-visible', inTop || inBottom);
+      }
+
+      document.addEventListener(
+        'mousemove',
+        (e) => {
+          lastY = e.clientY;
+          updateChromeVisibility();
+        },
+        { passive: true }
+      );
+
+      window.addEventListener('resize', () => {
+        updateChromeVisibility();
       });
-      
-      updateCounter();
-      loadingScreen.classList.add('hidden');
-      
-      if (isPlaying && photos.length > 1) {
-        startSlideshow();
-      }
-    }
-    
-    function updateSlideshow() {
-      const existingSlides = slideshowContainer.querySelectorAll('.slide').length;
-      
-      for (let i = existingSlides; i < photos.length; i++) {
-        const slide = document.createElement('div');
-        slide.className = 'slide';
-        
-        const img = document.createElement('img');
-        img.src = photos[i];
-        img.alt = `Event photo ${i + 1}`;
-        
-        slide.appendChild(img);
-        slideshowContainer.appendChild(slide);
-      }
-      
-      updateCounter();
-    }
-    
-    function showNoPhotos() {
-      loadingScreen.classList.add('hidden');
-      noPhotos.style.display = 'block';
-    }
-    
-    function showSlide(index) {
-      const slides = document.querySelectorAll('.slide');
-      slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === index);
+
+      const topBar = document.querySelector('header.top-bar');
+      topBar?.addEventListener('focusin', updateChromeVisibility);
+      topBar?.addEventListener('focusout', () => {
+        setTimeout(updateChromeVisibility, 0);
       });
-      currentIndex = index;
-      updateCounter();
-    }
-    
-    function nextSlide() {
-      const nextIndex = (currentIndex + 1) % photos.length;
-      showSlide(nextIndex);
-    }
-    
-    function prevSlide() {
-      const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-      showSlide(prevIndex);
-    }
-    
-    function startSlideshow() {
-      slideInterval = setInterval(nextSlide, SLIDE_DURATION);
-    }
-    
-    function stopSlideshow() {
-      clearInterval(slideInterval);
-    }
-    
-    function togglePlayPause() {
-      isPlaying = !isPlaying;
-      
-      if (isPlaying) {
-        playPauseBtn.innerHTML = '⏸ Pause';
-        if (photos.length > 1) startSlideshow();
-      } else {
-        playPauseBtn.innerHTML = '▶ Play';
-        stopSlideshow();
-      }
-    }
-    
-    function updateCounter() {
-      currentSlideEl.textContent = photos.length > 0 ? currentIndex + 1 : 0;
-      totalSlidesEl.textContent = photos.length;
-    }
-    
-    prevBtn.addEventListener('click', () => {
-      prevSlide();
-      if (isPlaying) {
-        stopSlideshow();
-        startSlideshow();
-      }
-    });
-    
-    nextBtn.addEventListener('click', () => {
-      nextSlide();
-      if (isPlaying) {
-        stopSlideshow();
-        startSlideshow();
-      }
-    });
-    
-    playPauseBtn.addEventListener('click', togglePlayPause);
-    
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') prevSlide();
-      if (e.key === 'ArrowRight') nextSlide();
-      if (e.key === ' ') {
-        e.preventDefault();
-        togglePlayPause();
-      }
-    });
-    
+    })();
+
     fetchPhotos();
-    setInterval(fetchPhotos, REFRESH_INTERVAL);
+    setInterval(fetchPhotos, REFRESH_MS);
   </script>
 </body>
 </html>
