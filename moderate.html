@@ -65,6 +65,10 @@
     }
     .actions {
       margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
     }
     .btn {
       padding: 0.75rem 1.5rem;
@@ -75,7 +79,6 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      margin-right: 1rem;
       transition: all 0.2s;
     }
     .btn:hover {
@@ -85,6 +88,31 @@
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem;
+      border-radius: 12px;
+    }
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .tab-btn.active {
+      background: white;
+      color: #667eea;
     }
     .grid {
       display: grid;
@@ -148,6 +176,30 @@
     .photo-card button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+    .btn-delete-approved {
+      background: #f56565;
+      color: white;
+    }
+    .btn-delete-approved:hover {
+      background: #e53e3e;
+    }
+    .approved-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: #48bb78;
+      color: white;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .photo-card {
+      position: relative;
     }
     .message {
       background: white;
@@ -229,6 +281,10 @@
 
     <div id="moderationPanel">
       <div class="actions">
+        <div class="tabs">
+          <button class="tab-btn active" id="pendingTab">⏳ Pending</button>
+          <button class="tab-btn" id="approvedTab">✓ Approved</button>
+        </div>
         <button class="btn" id="refreshBtn">🔄 Refresh</button>
         <button class="btn" id="logoutBtn">🚪 Logout</button>
       </div>
@@ -249,6 +305,7 @@
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
 
     let secret = sessionStorage.getItem('bb_mod_secret') || '';
+    let currentView = 'pending'; // 'pending' or 'approved'
 
     const authPanel = document.getElementById('authPanel');
     const moderationPanel = document.getElementById('moderationPanel');
@@ -256,6 +313,8 @@
     const authBtn = document.getElementById('authBtn');
     const refreshBtn = document.getElementById('refreshBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const pendingTab = document.getElementById('pendingTab');
+    const approvedTab = document.getElementById('approvedTab');
     const messageEl = document.getElementById('message');
     const photosContainer = document.getElementById('photosContainer');
 
@@ -306,7 +365,7 @@
 
         // Valid secret - show moderation panel
         showModeration();
-        loadPending();
+        loadPhotos();
       } catch (err) {
         console.error(err);
         alert('Network error. Please check your connection.');
@@ -316,7 +375,7 @@
     }
 
     refreshBtn.addEventListener('click', () => {
-      loadPending();
+      loadPhotos();
     });
 
     logoutBtn.addEventListener('click', () => {
@@ -326,6 +385,20 @@
       moderationPanel.style.display = 'none';
       photosContainer.innerHTML = '';
       messageEl.innerHTML = '';
+    });
+
+    pendingTab.addEventListener('click', () => {
+      currentView = 'pending';
+      pendingTab.classList.add('active');
+      approvedTab.classList.remove('active');
+      loadPhotos();
+    });
+
+    approvedTab.addEventListener('click', () => {
+      currentView = 'approved';
+      approvedTab.classList.add('active');
+      pendingTab.classList.remove('active');
+      loadPhotos();
     });
 
     // Lightbox
@@ -368,75 +441,135 @@
       }, 3000);
     }
 
-    async function loadPending() {
+    async function loadPhotos() {
       refreshBtn.disabled = true;
       try {
-        const res = await fetch(`${UPLOAD_BASE}/pending`, {
-          headers: { 'Authorization': `Bearer ${secret}` }
-        });
-
-        if (res.status === 401) {
-          showMessage('Invalid secret. Please login again.', 'error');
-          logoutBtn.click();
-          return;
+        if (currentView === 'pending') {
+          await loadPending();
+        } else {
+          await loadApproved();
         }
-
-        if (!res.ok) {
-          showMessage('Failed to load pending photos', 'error');
-          return;
-        }
-
-        const data = await res.json();
-        const keys = data.keys || [];
-
-        if (keys.length === 0) {
-          photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
-          return;
-        }
-
-        photosContainer.innerHTML = '';
-        const grid = document.createElement('div');
-        grid.className = 'grid';
-
-        keys.forEach(key => {
-          const card = createPhotoCard(key);
-          grid.appendChild(card);
-        });
-
-        photosContainer.appendChild(grid);
-      } catch (err) {
-        console.error(err);
-        showMessage('Network error', 'error');
       } finally {
         refreshBtn.disabled = false;
       }
     }
 
-    function createPhotoCard(key) {
+    async function loadPending() {
+      const res = await fetch(`${UPLOAD_BASE}/pending`, {
+        headers: { 'Authorization': `Bearer ${secret}` }
+      });
+
+      if (res.status === 401) {
+        showMessage('Invalid secret. Please login again.', 'error');
+        logoutBtn.click();
+        return;
+      }
+
+      if (!res.ok) {
+        showMessage('Failed to load pending photos', 'error');
+        return;
+      }
+
+      const data = await res.json();
+      const keys = data.keys || [];
+
+      if (keys.length === 0) {
+        photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
+        return;
+      }
+
+      photosContainer.innerHTML = '';
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      keys.forEach(key => {
+        const card = createPhotoCard(key, 'pending');
+        grid.appendChild(card);
+      });
+
+      photosContainer.appendChild(grid);
+    }
+
+    async function loadApproved() {
+      const res = await fetch(`${GALLERY_BASE}/images`, {
+        headers: { 'Authorization': `Bearer ${secret}` }
+      });
+
+      if (res.status === 401) {
+        showMessage('Invalid secret. Please login again.', 'error');
+        logoutBtn.click();
+        return;
+      }
+
+      if (!res.ok) {
+        showMessage('Failed to load approved photos', 'error');
+        return;
+      }
+
+      const data = await res.json();
+      const images = data.images || [];
+
+      if (images.length === 0) {
+        photosContainer.innerHTML = '<div class="empty">No approved photos yet.</div>';
+        return;
+      }
+
+      photosContainer.innerHTML = '';
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+
+      images.forEach(img => {
+        const card = createPhotoCard(img.key, 'approved');
+        grid.appendChild(card);
+      });
+
+      photosContainer.appendChild(grid);
+    }
+
+    function createPhotoCard(key, status = 'pending') {
       const card = document.createElement('div');
       card.className = 'photo-card';
 
-      // Image preview from gallery (or construct URL based on your setup)
       const imageUrl = `${GALLERY_BASE}/image/${encodeURIComponent(key)}`;
 
-      card.innerHTML = `
-        <img src="${imageUrl}" alt="Pending photo" loading="lazy">
-        <div class="info">
-          <div class="key">${key}</div>
-          <div class="card-actions">
-            <button class="btn-approve" data-key="${key}">✓ Approve</button>
-            <button class="btn-reject" data-key="${key}">✕ Reject</button>
+      if (status === 'pending') {
+        card.innerHTML = `
+          <img src="${imageUrl}" alt="Pending photo" loading="lazy">
+          <div class="info">
+            <div class="key">${key}</div>
+            <div class="card-actions">
+              <button class="btn-approve" data-key="${key}">✓ Approve</button>
+              <button class="btn-reject" data-key="${key}">✕ Reject</button>
+            </div>
           </div>
-        </div>
-      `;
+        `;
 
-      const img = card.querySelector('img');
-      const approveBtn = card.querySelector('.btn-approve');
-      const rejectBtn = card.querySelector('.btn-reject');
+        const img = card.querySelector('img');
+        const approveBtn = card.querySelector('.btn-approve');
+        const rejectBtn = card.querySelector('.btn-reject');
 
-      img.addEventListener('click', () => openLightbox(imageUrl));
-      approveBtn.addEventListener('click', () => approve(key, card));
-      rejectBtn.addEventListener('click', () => reject(key, card));
+        img.addEventListener('click', () => openLightbox(imageUrl));
+        approveBtn.addEventListener('click', () => approve(key, card));
+        rejectBtn.addEventListener('click', () => reject(key, card));
+      } else {
+        // Approved photo
+        card.innerHTML = `
+          <div class="approved-badge">Live</div>
+          <img src="${imageUrl}" alt="Approved photo" loading="lazy">
+          <div class="info">
+            <div class="key">${key}</div>
+            <div class="card-actions">
+              <button class="btn-delete-approved" data-key="${key}">✕ Delete</button>
+            </div>
+          </div>
+        `;
+
+        const img = card.querySelector('img');
+        const deleteBtn = card.querySelector('.btn-delete-approved');
+
+        img.addEventListener('click', () => openLightbox(imageUrl));
+        deleteBtn.addEventListener('click', () => deleteApproved(key, card));
+      }
 
       return card;
     }
@@ -483,9 +616,6 @@
       btns.forEach(b => b.disabled = true);
 
       try {
-        // Delete from R2 via gallery worker (if it supports DELETE on pending/)
-        // Or add a DELETE /pending/{key} endpoint to upload worker
-        // For now, we'll assume gallery worker can delete any key with auth
         const res = await fetch(`${GALLERY_BASE}/image/${encodeURIComponent(key)}`, {
           method: 'DELETE',
           headers: {
@@ -504,6 +634,39 @@
 
         if (!photosContainer.querySelector('.photo-card')) {
           photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage('Network error', 'error');
+        btns.forEach(b => b.disabled = false);
+      }
+    }
+
+    async function deleteApproved(key, card) {
+      if (!confirm('Remove this photo from the live slideshow?')) return;
+
+      const btns = card.querySelectorAll('button');
+      btns.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${GALLERY_BASE}/image/${encodeURIComponent(key)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${secret}`
+          }
+        });
+
+        if (!res.ok) {
+          showMessage('Failed to delete', 'error');
+          btns.forEach(b => b.disabled = false);
+          return;
+        }
+
+        showMessage('Photo removed from slideshow', 'success');
+        card.remove();
+
+        if (!photosContainer.querySelector('.photo-card')) {
+          photosContainer.innerHTML = '<div class="empty">No approved photos.</div>';
         }
       } catch (err) {
         console.error(err);
