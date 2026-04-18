@@ -244,26 +244,26 @@
         0 0 100px rgba(99, 230, 190, 0.06);
     }
 
-    /* Single transform timeline: ease in, then slow drift (Ken Burns–style) */
+    /* Faster, more dynamic reveal animation */
     .slide.is-on img {
-      animation: photoReveal 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+      animation: photoReveal 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
     @keyframes photoReveal {
       0% {
         opacity: 0;
-        transform: scale(1.1);
-        filter: brightness(0.85);
+        transform: scale(1.15) rotate(2deg);
+        filter: brightness(0.7) blur(8px);
       }
-      14% {
+      20% {
         opacity: 1;
-        transform: scale(1);
-        filter: brightness(1);
+        transform: scale(1.08) rotate(0deg);
+        filter: brightness(1) blur(0px);
       }
       100% {
         opacity: 1;
-        transform: scale(1.045);
-        filter: brightness(1);
+        transform: scale(1.12) translateX(-2%);
+        filter: brightness(1.05);
       }
     }
 
@@ -376,9 +376,6 @@
   <header class="top-bar">
     <h1>Live photos</h1>
     <div class="top-bar-actions">
-      <button type="button" class="btn-delete" id="deleteBtn" disabled title="Remove the photo currently on screen from the slideshow">
-        Remove photo
-      </button>
       <div class="counter"><span id="currentSlide">0</span> / <span id="totalSlides">0</span></div>
     </div>
   </header>
@@ -397,7 +394,7 @@
   <script>
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
     const GALLERY_LIST_URL = `${GALLERY_BASE}/images`;
-    const SLIDE_MS = 4000;
+    const SLIDE_MS = 3500;
     const REFRESH_MS = 30000;
 
     const stage = document.getElementById('stage');
@@ -407,7 +404,6 @@
     const totalSlidesEl = document.getElementById('totalSlides');
     const progressBar = document.getElementById('progressBar');
     const progressWrap = document.getElementById('progressWrap');
-    const deleteBtn = document.getElementById('deleteBtn');
 
     let photos = [];
     let index = 0;
@@ -425,9 +421,18 @@
       }
     }
 
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     function photosFromApi(data) {
       const items = data.images || [];
-      return items
+      const mapped = items
         .map((item) => {
           const key = (item.key && String(item.key)) || extractKeyFromUrl(item.url);
           const path = item.url || (key ? `/image/${encodeURIComponent(key)}` : '');
@@ -435,13 +440,12 @@
           return { key, url };
         })
         .filter((p) => p.key);
+      return shuffle(mapped);
     }
 
     function updateCounter() {
       currentSlideEl.textContent = photos.length ? index + 1 : 0;
       totalSlidesEl.textContent = photos.length;
-      const cur = photos[index];
-      deleteBtn.disabled = !photos.length || !cur?.key;
     }
 
     function clearTimers() {
@@ -544,52 +548,6 @@
       }
     }
 
-    async function deleteCurrentPhoto() {
-      if (!photos.length) return;
-      const p = photos[index];
-      if (!p?.key) {
-        alert('Cannot delete this image (missing key).');
-        return;
-      }
-      if (!confirm('Remove this photo from the slideshow for everyone?')) return;
-
-      let pin = sessionStorage.getItem('bb_slideshow_delete_pin') || '';
-
-      const doDelete = async (headerPin) =>
-        fetch(`${GALLERY_BASE}/image/${encodeURIComponent(p.key)}`, {
-          method: 'DELETE',
-          headers: headerPin ? { 'X-Delete-Key': headerPin } : {},
-        });
-
-      let res = await doDelete(pin);
-      if (res.status === 401) {
-        sessionStorage.removeItem('bb_slideshow_delete_pin');
-        pin = prompt('Enter staff PIN to remove photos:') || '';
-        if (!pin) return;
-        sessionStorage.setItem('bb_slideshow_delete_pin', pin);
-        res = await doDelete(pin);
-      }
-
-      if (!res.ok) {
-        let msg = res.statusText;
-        try {
-          const j = await res.json();
-          if (j.error) msg = j.error;
-        } catch (_) {
-          try {
-            msg = await res.text();
-          } catch (_) {}
-        }
-        alert('Could not delete: ' + msg);
-        return;
-      }
-
-      await fetchPhotos();
-    }
-
-    deleteBtn.addEventListener('click', () => {
-      deleteCurrentPhoto();
-    });
 
     (function initRegionChrome() {
       const mq = window.matchMedia('(hover: hover) and (pointer: fine)');

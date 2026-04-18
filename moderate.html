@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Moderation — Basecamp Beats</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      color: #1a202c;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: white;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+    }
+    .auth-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      margin-bottom: 2rem;
+    }
+    .auth-panel input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .auth-panel button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .auth-panel button:hover {
+      background: #5568d3;
+    }
+    .auth-panel button:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+    }
+    #moderationPanel {
+      display: none;
+    }
+    .actions {
+      margin-bottom: 2rem;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      background: white;
+      color: #667eea;
+      border: 2px solid white;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 1rem;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: transparent;
+      color: white;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .photo-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s;
+    }
+    .photo-card:hover {
+      transform: translateY(-4px);
+    }
+    .photo-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      cursor: pointer;
+    }
+    .photo-card .info {
+      padding: 1rem;
+    }
+    .photo-card .key {
+      font-size: 0.875rem;
+      color: #718096;
+      margin-bottom: 0.75rem;
+      word-break: break-all;
+    }
+    .photo-card .card-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .photo-card button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-approve {
+      background: #48bb78;
+      color: white;
+    }
+    .btn-approve:hover {
+      background: #38a169;
+    }
+    .btn-reject {
+      background: #f56565;
+      color: white;
+    }
+    .btn-reject:hover {
+      background: #e53e3e;
+    }
+    .photo-card button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .message {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .message.success {
+      color: #38a169;
+    }
+    .message.error {
+      color: #e53e3e;
+    }
+    .empty {
+      background: white;
+      padding: 3rem;
+      border-radius: 12px;
+      text-align: center;
+      color: #718096;
+      font-size: 1.125rem;
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: white;
+      color: #1a202c;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s;
+    }
+    .lightbox-close:hover {
+      transform: scale(1.1);
+      background: #f7fafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📸 Photo Moderation</h1>
+
+    <div class="auth-panel" id="authPanel">
+      <h2 style="margin-bottom: 1rem;">Enter moderation secret</h2>
+      <input type="password" id="secretInput" placeholder="Moderation secret" autocomplete="off">
+      <button id="authBtn">Authenticate</button>
+    </div>
+
+    <div id="moderationPanel">
+      <div class="actions">
+        <button class="btn" id="refreshBtn">🔄 Refresh</button>
+        <button class="btn" id="logoutBtn">🚪 Logout</button>
+      </div>
+
+      <div id="message"></div>
+
+      <div id="photosContainer"></div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <img id="lightboxImg" alt="Full size preview">
+  </div>
+
+  <script>
+    const UPLOAD_BASE = 'https://bb-photo-upload.beatsbasecamp.workers.dev';
+    const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
+
+    let secret = sessionStorage.getItem('bb_mod_secret') || '';
+
+    const authPanel = document.getElementById('authPanel');
+    const moderationPanel = document.getElementById('moderationPanel');
+    const secretInput = document.getElementById('secretInput');
+    const authBtn = document.getElementById('authBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const messageEl = document.getElementById('message');
+    const photosContainer = document.getElementById('photosContainer');
+
+    // Only auto-login if secret exists in sessionStorage AND is valid
+    if (secret) {
+      verifyAndShowModeration();
+    }
+
+    authBtn.addEventListener('click', () => {
+      const val = secretInput.value.trim();
+      if (!val) {
+        alert('Please enter the secret');
+        return;
+      }
+      secret = val;
+      sessionStorage.setItem('bb_mod_secret', secret);
+      secretInput.value = '';
+      verifyAndShowModeration();
+    });
+
+    async function verifyAndShowModeration() {
+      authBtn.disabled = true;
+      authBtn.textContent = 'Verifying...';
+      
+      try {
+        // Test the secret by fetching pending list
+        const res = await fetch(`${UPLOAD_BASE}/pending`, {
+          headers: { 'Authorization': `Bearer ${secret}` }
+        });
+
+        if (res.status === 401) {
+          // Invalid secret
+          sessionStorage.removeItem('bb_mod_secret');
+          secret = '';
+          alert('Invalid secret. Please try again.');
+          authBtn.disabled = false;
+          authBtn.textContent = 'Authenticate';
+          secretInput.focus();
+          return;
+        }
+
+        if (!res.ok) {
+          alert('Server error. Please try again.');
+          authBtn.disabled = false;
+          authBtn.textContent = 'Authenticate';
+          return;
+        }
+
+        // Valid secret - show moderation panel
+        showModeration();
+        loadPending();
+      } catch (err) {
+        console.error(err);
+        alert('Network error. Please check your connection.');
+        authBtn.disabled = false;
+        authBtn.textContent = 'Authenticate';
+      }
+    }
+
+    refreshBtn.addEventListener('click', () => {
+      loadPending();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      secret = '';
+      sessionStorage.removeItem('bb_mod_secret');
+      authPanel.style.display = 'block';
+      moderationPanel.style.display = 'none';
+      photosContainer.innerHTML = '';
+      messageEl.innerHTML = '';
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxClose = document.getElementById('lightboxClose');
+
+    function openLightbox(imageSrc) {
+      lightboxImg.src = imageSrc;
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('is-open');
+      lightboxImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+
+    lightbox.addEventListener('click', closeLightbox);
+
+    lightboxImg.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    function showModeration() {
+      authPanel.style.display = 'none';
+      moderationPanel.style.display = 'block';
+    }
+
+    function showMessage(text, type = 'success') {
+      messageEl.innerHTML = `<div class="message ${type}">${text}</div>`;
+      setTimeout(() => {
+        messageEl.innerHTML = '';
+      }, 3000);
+    }
+
+    async function loadPending() {
+      refreshBtn.disabled = true;
+      try {
+        const res = await fetch(`${UPLOAD_BASE}/pending`, {
+          headers: { 'Authorization': `Bearer ${secret}` }
+        });
+
+        if (res.status === 401) {
+          showMessage('Invalid secret. Please login again.', 'error');
+          logoutBtn.click();
+          return;
+        }
+
+        if (!res.ok) {
+          showMessage('Failed to load pending photos', 'error');
+          return;
+        }
+
+        const data = await res.json();
+        const keys = data.keys || [];
+
+        if (keys.length === 0) {
+          photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
+          return;
+        }
+
+        photosContainer.innerHTML = '';
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+
+        keys.forEach(key => {
+          const card = createPhotoCard(key);
+          grid.appendChild(card);
+        });
+
+        photosContainer.appendChild(grid);
+      } catch (err) {
+        console.error(err);
+        showMessage('Network error', 'error');
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    function createPhotoCard(key) {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+
+      // Image preview from gallery (or construct URL based on your setup)
+      const imageUrl = `${GALLERY_BASE}/image/${encodeURIComponent(key)}`;
+
+      card.innerHTML = `
+        <img src="${imageUrl}" alt="Pending photo" loading="lazy">
+        <div class="info">
+          <div class="key">${key}</div>
+          <div class="card-actions">
+            <button class="btn-approve" data-key="${key}">✓ Approve</button>
+            <button class="btn-reject" data-key="${key}">✕ Reject</button>
+          </div>
+        </div>
+      `;
+
+      const img = card.querySelector('img');
+      const approveBtn = card.querySelector('.btn-approve');
+      const rejectBtn = card.querySelector('.btn-reject');
+
+      img.addEventListener('click', () => openLightbox(imageUrl));
+      approveBtn.addEventListener('click', () => approve(key, card));
+      rejectBtn.addEventListener('click', () => reject(key, card));
+
+      return card;
+    }
+
+    async function approve(key, card) {
+      const btns = card.querySelectorAll('button');
+      btns.forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch(`${UPLOAD_BASE}/approve`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${secret}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ key })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          showMessage(data.error || 'Failed to approve', 'error');
+          btns.forEach(b => b.disabled = false);
+          return;
+        }
+
+        showMessage('✓ Photo approved!', 'success');
+        card.remove();
+
+        // Check if empty
+        if (!photosContainer.querySelector('.photo-card')) {
+          photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage('Network error', 'error');
+        btns.forEach(b => b.disabled = false);
+      }
+    }
+
+    async function reject(key, card) {
+      if (!confirm('Delete this photo permanently?')) return;
+
+      const btns = card.querySelectorAll('button');
+      btns.forEach(b => b.disabled = true);
+
+      try {
+        // Delete from R2 via gallery worker (if it supports DELETE on pending/)
+        // Or add a DELETE /pending/{key} endpoint to upload worker
+        // For now, we'll assume gallery worker can delete any key with auth
+        const res = await fetch(`${GALLERY_BASE}/image/${encodeURIComponent(key)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${secret}`
+          }
+        });
+
+        if (!res.ok) {
+          showMessage('Failed to delete', 'error');
+          btns.forEach(b => b.disabled = false);
+          return;
+        }
+
+        showMessage('✗ Photo rejected', 'success');
+        card.remove();
+
+        if (!photosContainer.querySelector('.photo-card')) {
+          photosContainer.innerHTML = '<div class="empty">✨ All caught up! No pending photos.</div>';
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage('Network error', 'error');
+        btns.forEach(b => b.disabled = false);
+      }
+    }
+  </script>
+</body>
+</html>

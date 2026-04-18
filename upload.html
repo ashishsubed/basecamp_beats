@@ -494,6 +494,11 @@
           hideStatus();
           uploadFlow.hidden = true;
           successPanel.hidden = false;
+          // Update success message if photo is pending review
+          if (data.status === 'pending' && data.message) {
+            const lead = successPanel.querySelector('.success-lead');
+            if (lead) lead.textContent = data.message;
+          }
           return;
         } else {
           toast(data.error || 'Upload failed.', 'err');
