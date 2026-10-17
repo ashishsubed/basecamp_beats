@@ -18,24 +18,22 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(255, 140, 40, 0.28), transparent 55%),
-        radial-gradient(ellipse 50% 40% at 90% 90%, rgba(194, 65, 45, 0.12), transparent 50%);
+        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(255, 140, 40, 0.22), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 90%, rgba(194, 65, 45, 0.1), transparent 50%);
       pointer-events: none;
     }
-    .wrap { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 22px 18px 40px; }
+    .wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     a { color: #e8c07a; font-weight: 700; text-decoration: none; }
     h1 {
       font-family: 'Cinzel', serif;
       text-align: center;
-      font-size: clamp(1.7rem, 5vw, 2.8rem);
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
       background: linear-gradient(135deg, #ffb36a, #ff7a2e);
       -webkit-background-clip: text;
       background-clip: text;
@@ -43,55 +41,90 @@
     }
     .totals {
       text-align: center;
-      color: rgba(255,255,255,0.7);
-      margin: 8px 0 24px;
+      color: rgba(255,255,255,0.65);
+      margin: 6px 0 22px;
       font-weight: 600;
     }
-    .row {
-      display: grid;
-      grid-template-columns: 72px 1fr;
-      gap: 14px;
-      align-items: center;
-      margin-bottom: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,122,46,0.22);
-      border-radius: 16px;
-      padding: 10px 14px 10px 10px;
+    .lead {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      margin-bottom: 22px;
+      border: 1px solid rgba(232, 192, 122, 0.45);
+      background: #120804;
+      cursor: pointer;
     }
-    .row.lead {
-      border-color: #e8c07a;
-      box-shadow: 0 0 28px rgba(255, 180, 70, 0.18);
+    .lead img {
+      width: 100%;
+      height: min(72vh, 620px);
+      object-fit: contain;
+      background: #0a0503;
+      display: block;
     }
-    .thumb {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: #1a0c06;
+    .lead-meta {
+      padding: 16px 18px 18px;
     }
     .rank {
       font-weight: 800;
       color: #e8c07a;
-      font-size: 0.85rem;
-      margin-bottom: 2px;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
     }
-    .name { font-weight: 800; font-size: 1.05rem; }
+    .name { font-weight: 800; font-size: 1.35rem; }
     .bar-wrap {
-      height: 10px;
-      background: rgba(255,255,255,0.08);
+      height: 8px;
+      background: rgba(255,255,255,0.1);
       border-radius: 99px;
       overflow: hidden;
-      margin: 8px 0 4px;
+      margin: 10px 0 6px;
     }
     .bar {
       height: 100%;
-      width: 0;
       border-radius: 99px;
       background: linear-gradient(90deg, #ff7a2e, #e8c07a);
-      transition: width 0.6s ease;
     }
-    .count { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+    .count { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: #120804;
+      border: 1px solid rgba(255,122,46,0.25);
+      border-radius: 18px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      background: #0a0503;
+    }
+    .card .pad { padding: 12px 14px 14px; }
     .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0,0,0,0.94);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 16px;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 96%;
+      max-height: 94vh;
+      object-fit: contain;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -104,16 +137,31 @@
     <p class="totals" id="totals">Waiting for votes…</p>
     <div id="board"></div>
   </div>
+  <div class="lightbox" id="lightbox"><img id="lightboxImg" alt=""></div>
   <script>
     const API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
     const EVENT_ID = 'halloween-2026';
     const board = document.getElementById('board');
     const totals = document.getElementById('totals');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    function srcOf(e) {
+      const path = e.url || e.thumbUrl || '';
+      return path.startsWith('http') ? path : API + path;
+    }
 
     function resultsUrl() {
       const u = new URL('/results', API);
       u.searchParams.set('event', EVENT_ID);
       return u.toString();
+    }
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+    function openPhoto(src) {
+      lightboxImg.src = src;
+      lightbox.classList.add('open');
     }
 
     async function refresh() {
@@ -128,19 +176,35 @@
           return;
         }
         const max = Math.max(1, ...entries.map((e) => e.votes));
-        board.innerHTML = entries.map((e, i) => {
-          const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
+        const [lead, ...rest] = entries;
+        const leadSrc = srcOf(lead);
+        const leadPct = Math.round((lead.votes / max) * 100);
+        const leadHtml = `<article class="lead" data-src="${leadSrc}">
+            <img src="${leadSrc}" alt="${lead.name}">
+            <div class="lead-meta">
+              <div class="rank">${lead.votes ? 'Leading' : '#' + 1}</div>
+              <div class="name">${lead.name}</div>
+              <div class="bar-wrap"><div class="bar" style="width:${leadPct}%"></div></div>
+              <div class="count">${lead.votes} vote${lead.votes === 1 ? '' : 's'}</div>
+            </div>
+          </article>`;
+        const restHtml = rest.length ? `<div class="grid">${rest.map((e, i) => {
+          const src = srcOf(e);
           const pct = Math.round((e.votes / max) * 100);
-          return `<div class="row${i === 0 && e.votes ? ' lead' : ''}">
-            <img class="thumb" src="${src}" alt="">
-            <div>
-              <div class="rank">${i === 0 && e.votes ? '👑 Leading' : '#' + (i + 1)}</div>
+          return `<article class="card" data-src="${src}">
+            <img src="${src}" alt="${e.name}">
+            <div class="pad">
+              <div class="rank">#${i + 2}</div>
               <div class="name">${e.name}</div>
               <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
               <div class="count">${e.votes} vote${e.votes === 1 ? '' : 's'}</div>
             </div>
-          </div>`;
-        }).join('');
+          </article>`;
+        }).join('')}</div>` : '';
+        board.innerHTML = leadHtml + restHtml;
+        board.querySelectorAll('[data-src]').forEach((el) => {
+          el.addEventListener('click', () => openPhoto(el.dataset.src));
+        });
       } catch (_) {
         totals.textContent = 'Could not reach the vote board';
       }
