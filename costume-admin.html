@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Costume contest uploads — Basecamp Beats</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #1a0c06, #3b1d0c);
+      color: #1a202c;
+      padding: 20px 16px 40px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { color: #fff; font-size: 1.55rem; margin-bottom: 8px; }
+    .hint { color: rgba(255,255,255,0.75); margin-bottom: 18px; font-size: 0.92rem; line-height: 1.5; }
+    .hint a { color: #e8c07a; }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #4a5568;
+      margin-bottom: 6px;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      font: inherit;
+      padding: 14px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e0;
+      margin-bottom: 12px;
+    }
+    .file-inputs { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+    .pickers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .pick {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 88px;
+      border: 1.5px dashed #d6c4b6;
+      border-radius: 12px;
+      background: #faf7f4;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #3b1d0c;
+      cursor: pointer;
+    }
+    .pick span { font-size: 1.4rem; }
+    .preview {
+      display: none;
+      margin-bottom: 12px;
+    }
+    .preview.is-on { display: block; }
+    .preview img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+    }
+    .file-name {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #4a5568;
+      word-break: break-all;
+    }
+    button {
+      font: inherit;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary {
+      width: 100%;
+      background: #c2412d;
+      color: #fff;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .ghost { background: #2d3748; color: #fff; }
+    .danger { background: #e53e3e; color: #fff; }
+    .msg { margin-top: 12px; font-weight: 600; min-height: 1.2em; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .look { background: #fff; border-radius: 12px; overflow: hidden; }
+    .look img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .look .pad { padding: 10px; }
+    .look .danger { width: 100%; margin-top: 8px; padding: 10px; }
+    #app { display: none; }
+    .empty { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Costume contest uploads</h1>
+    <p class="hint">Walk-show finalists only. Guest photos: <a href="/moderate.html">photo moderation</a>. Public: <a href="/vote.html">vote</a> · <a href="/results.html">results</a></p>
+
+    <div class="card" id="auth">
+      <label for="secret">Moderation secret</label>
+      <input type="password" id="secret" placeholder="Secret" autocomplete="off">
+      <button type="button" class="btn-primary" id="login">Unlock</button>
+      <p class="msg" id="authMsg"></p>
+    </div>
+
+    <div id="app">
+      <div class="card">
+        <label for="name">Look title</label>
+        <input type="text" id="name" placeholder="Name or costume" autocomplete="off">
+
+        <label>Photo</label>
+        <input class="file-inputs" type="file" id="fileCamera" accept="image/*" capture="environment">
+        <input class="file-inputs" type="file" id="fileLibrary" accept="image/*">
+        <div class="pickers">
+          <button type="button" class="pick" id="takePhoto">
+            <span aria-hidden="true">📷</span>
+            Take photo
+          </button>
+          <button type="button" class="pick" id="choosePhoto">
+            <span aria-hidden="true">🖼</span>
+            Photo library
+          </button>
+        </div>
+        <div class="preview" id="preview">
+          <img id="previewImg" alt="Selected look">
+          <p class="file-name" id="fileName"></p>
+        </div>
+        <button type="button" class="btn-primary" id="upload">Upload look</button>
+        <div class="actions">
+          <button type="button" class="ghost" id="refresh">Refresh</button>
+          <button type="button" class="danger" id="reset">Reset votes</button>
+        </div>
+        <p class="msg" id="msg"></p>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+  <script src="/js/compress-image.js"></script>
+  <script>
+    const API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
+    const EVENT_ID = 'halloween-2026';
+    let secret = sessionStorage.getItem('bb_mod_secret') || '';
+    let chosenFile = null;
+
+    function apiUrl(path) {
+      const u = new URL(path, API);
+      u.searchParams.set('event', EVENT_ID);
+      return u.toString();
+    }
+
+    const auth = document.getElementById('auth');
+    const app = document.getElementById('app');
+    const msg = document.getElementById('msg');
+    const grid = document.getElementById('grid');
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg');
+    const fileName = document.getElementById('fileName');
+
+    function headers(json) {
+      const h = { Authorization: 'Bearer ' + secret };
+      if (json) h['Content-Type'] = 'application/json';
+      return h;
+    }
+
+    function setFile(file) {
+      if (!file) return;
+      chosenFile = file;
+      fileName.textContent = file.name || 'Photo from camera';
+      const url = URL.createObjectURL(file);
+      previewImg.onload = () => URL.revokeObjectURL(url);
+      previewImg.src = url;
+      preview.classList.add('is-on');
+      msg.textContent = '';
+    }
+
+    document.getElementById('takePhoto').addEventListener('click', () => {
+      document.getElementById('fileCamera').click();
+    });
+    document.getElementById('choosePhoto').addEventListener('click', () => {
+      document.getElementById('fileLibrary').click();
+    });
+    document.getElementById('fileCamera').addEventListener('change', (e) => {
+      setFile(e.target.files && e.target.files[0]);
+    });
+    document.getElementById('fileLibrary').addEventListener('change', (e) => {
+      setFile(e.target.files && e.target.files[0]);
+    });
+
+    async function load() {
+      const res = await fetch(apiUrl('/results'));
+      const data = await res.json();
+      const entries = data.entries || [];
+      if (!entries.length) {
+        grid.innerHTML = '<p class="empty">No looks yet. Photograph each finalist after the walk show.</p>';
+        return;
+      }
+      grid.innerHTML = entries.map((e) => {
+        const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
+        return `<div class="look">
+          <img src="${src}" alt="">
+          <div class="pad">
+            <div><strong>${e.name}</strong></div>
+            <div>${e.votes} vote${e.votes === 1 ? '' : 's'}</div>
+            <button class="danger" data-key="${e.key}">Remove</button>
+          </div>
+        </div>`;
+      }).join('');
+      grid.querySelectorAll('button[data-key]').forEach((btn) => {
+        btn.addEventListener('click', () => remove(btn.dataset.key));
+      });
+    }
+
+    async function remove(key) {
+      if (!confirm('Remove this look?')) return;
+      await fetch(apiUrl('/entries'), {
+        method: 'DELETE',
+        headers: headers(true),
+        body: JSON.stringify({ key }),
+      });
+      load();
+    }
+
+    const authMsg = document.getElementById('authMsg');
+
+    function lockApp(message) {
+      sessionStorage.removeItem('bb_mod_secret');
+      secret = '';
+      app.style.display = 'none';
+      auth.style.display = 'block';
+      if (authMsg) authMsg.textContent = message || '';
+    }
+
+    async function checkSecret() {
+      const res = await fetch(apiUrl('/admin'), { headers: headers() });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 404) {
+        return { ok: false, error: 'Cloudflare still has an old vote Worker. Open bb-costume-vote → Edit code, paste bb-costume-vote-worker.js from this project, then Save and Deploy.' };
+      }
+      if (!res.ok) {
+        return { ok: false, error: data.error === 'Unauthorized'
+          ? 'That secret does not match bb-costume-vote. Set MODERATION_SECRET on that Worker, then unlock again.'
+          : (data.error || 'Could not unlock') };
+      }
+      return { ok: true };
+    }
+
+    async function openApp() {
+      const result = await checkSecret();
+      if (!result.ok) {
+        lockApp(result.error);
+        return;
+      }
+      auth.style.display = 'none';
+      app.style.display = 'block';
+      load();
+    }
+
+    document.getElementById('login').addEventListener('click', async () => {
+      secret = document.getElementById('secret').value.trim();
+      if (!secret) return;
+      sessionStorage.setItem('bb_mod_secret', secret);
+      if (authMsg) authMsg.textContent = 'Checking…';
+      await openApp();
+    });
+
+    if (secret) openApp();
+
+    document.getElementById('refresh').addEventListener('click', () => load());
+    document.getElementById('reset').addEventListener('click', async () => {
+      if (!confirm('Clear every vote? Looks stay.')) return;
+      await fetch(apiUrl('/admin/reset-votes'), { method: 'POST', headers: headers() });
+      msg.textContent = 'Votes reset.';
+      load();
+    });
+
+    document.getElementById('upload').addEventListener('click', async () => {
+      const name = document.getElementById('name').value.trim() || 'Costume';
+      if (!chosenFile) { msg.textContent = 'Take or choose a photo first.'; return; }
+      msg.textContent = 'Compressing…';
+      const ready = await compressImageFile(chosenFile, { maxEdge: 1400, quality: 0.8 });
+      msg.textContent = 'Uploading…';
+      const fd = new FormData();
+      fd.append('file', ready);
+      fd.append('name', name);
+      const res = await fetch(apiUrl('/entries'), { method: 'POST', headers: { Authorization: 'Bearer ' + secret }, body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        lockApp('That secret does not match bb-costume-vote. Update MODERATION_SECRET on that Worker.');
+        return;
+      }
+      if (!res.ok) { msg.textContent = data.error || 'Upload failed'; return; }
+      msg.textContent = 'Added ' + name;
+      chosenFile = null;
+      preview.classList.remove('is-on');
+      previewImg.removeAttribute('src');
+      document.getElementById('fileCamera').value = '';
+      document.getElementById('fileLibrary').value = '';
+      document.getElementById('name').value = '';
+      load();
+    });
+  </script>
+</body>
+</html>

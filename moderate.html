@@ -272,6 +272,7 @@
 <body>
   <div class="container">
     <h1>📸 Photo Moderation</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:-0.4rem 0 1.4rem">Halloween 2026 guest photos only — costume looks are on vote-admin.</p>
 
     <div class="auth-panel" id="authPanel">
       <h2 style="margin-bottom: 1rem;">Enter moderation secret</h2>
@@ -303,6 +304,14 @@
   <script>
     const UPLOAD_BASE = 'https://bb-photo-upload.beatsbasecamp.workers.dev';
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
+    const EVENT_ID = 'halloween-2026';
+
+    function eventUrl(base, path, extra) {
+      const u = new URL(path, base.endsWith('/') ? base : base + '/');
+      u.searchParams.set('event', EVENT_ID);
+      if (extra && extra.w) u.searchParams.set('w', String(extra.w));
+      return u.toString();
+    }
 
     let secret = sessionStorage.getItem('bb_mod_secret') || '';
     let currentView = 'pending'; // 'pending' or 'approved'
@@ -341,7 +350,7 @@
       
       try {
         // Test the secret by fetching pending list
-        const res = await fetch(`${UPLOAD_BASE}/pending`, {
+        const res = await fetch(eventUrl(UPLOAD_BASE, '/pending'), {
           headers: { 'Authorization': `Bearer ${secret}` }
         });
 
@@ -455,7 +464,7 @@
     }
 
     async function loadPending() {
-      const res = await fetch(`${UPLOAD_BASE}/pending`, {
+      const res = await fetch(eventUrl(UPLOAD_BASE, '/pending'), {
         headers: { 'Authorization': `Bearer ${secret}` }
       });
 
@@ -491,7 +500,7 @@
     }
 
     async function loadApproved() {
-      const res = await fetch(`${GALLERY_BASE}/images`, {
+      const res = await fetch(eventUrl(GALLERY_BASE, '/images'), {
         headers: { 'Authorization': `Bearer ${secret}` }
       });
 
@@ -530,7 +539,8 @@
       const card = document.createElement('div');
       card.className = 'photo-card';
 
-      const imageUrl = `${GALLERY_BASE}/image/${encodeURIComponent(key)}`;
+      const imageUrl = eventUrl(GALLERY_BASE, `/image/${encodeURIComponent(key)}`, { w: 720 });
+      const fullUrl = eventUrl(GALLERY_BASE, `/image/${encodeURIComponent(key)}`, { w: 1600 });
 
       if (status === 'pending') {
         card.innerHTML = `
@@ -548,7 +558,7 @@
         const approveBtn = card.querySelector('.btn-approve');
         const rejectBtn = card.querySelector('.btn-reject');
 
-        img.addEventListener('click', () => openLightbox(imageUrl));
+        img.addEventListener('click', () => openLightbox(fullUrl));
         approveBtn.addEventListener('click', () => approve(key, card));
         rejectBtn.addEventListener('click', () => reject(key, card));
       } else {
@@ -567,7 +577,7 @@
         const img = card.querySelector('img');
         const deleteBtn = card.querySelector('.btn-delete-approved');
 
-        img.addEventListener('click', () => openLightbox(imageUrl));
+        img.addEventListener('click', () => openLightbox(fullUrl));
         deleteBtn.addEventListener('click', () => deleteApproved(key, card));
       }
 
@@ -579,7 +589,7 @@
       btns.forEach(b => b.disabled = true);
 
       try {
-        const res = await fetch(`${UPLOAD_BASE}/approve`, {
+        const res = await fetch(eventUrl(UPLOAD_BASE, '/approve'), {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${secret}`,
@@ -616,7 +626,7 @@
       btns.forEach(b => b.disabled = true);
 
       try {
-        const res = await fetch(`${GALLERY_BASE}/image/${encodeURIComponent(key)}`, {
+        const res = await fetch(eventUrl(GALLERY_BASE, `/image/${encodeURIComponent(key)}`), {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${secret}`
@@ -649,7 +659,7 @@
       btns.forEach(b => b.disabled = true);
 
       try {
-        const res = await fetch(`${GALLERY_BASE}/image/${encodeURIComponent(key)}`, {
+        const res = await fetch(eventUrl(GALLERY_BASE, `/image/${encodeURIComponent(key)}`), {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${secret}`

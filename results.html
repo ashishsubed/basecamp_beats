@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live costume results — Basecamp Beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', system-ui, sans-serif;
+      color: #fff;
+      background: #050201;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(255, 140, 40, 0.28), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 90% 90%, rgba(194, 65, 45, 0.12), transparent 50%);
+      pointer-events: none;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 22px 18px 40px; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    a { color: #e8c07a; font-weight: 700; text-decoration: none; }
+    h1 {
+      font-family: 'Cinzel', serif;
+      text-align: center;
+      font-size: clamp(1.7rem, 5vw, 2.8rem);
+      background: linear-gradient(135deg, #ffb36a, #ff7a2e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .totals {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      margin: 8px 0 24px;
+      font-weight: 600;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,122,46,0.22);
+      border-radius: 16px;
+      padding: 10px 14px 10px 10px;
+    }
+    .row.lead {
+      border-color: #e8c07a;
+      box-shadow: 0 0 28px rgba(255, 180, 70, 0.18);
+    }
+    .thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #1a0c06;
+    }
+    .rank {
+      font-weight: 800;
+      color: #e8c07a;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+    .name { font-weight: 800; font-size: 1.05rem; }
+    .bar-wrap {
+      height: 10px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 8px 0 4px;
+    }
+    .bar {
+      height: 100%;
+      width: 0;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #ff7a2e, #e8c07a);
+      transition: width 0.6s ease;
+    }
+    .count { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+    .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a href="/vote.html">← Vote</a>
+      <a href="/">Home</a>
+    </div>
+    <h1>Live results</h1>
+    <p class="totals" id="totals">Waiting for votes…</p>
+    <div id="board"></div>
+  </div>
+  <script>
+    const API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
+    const EVENT_ID = 'halloween-2026';
+    const board = document.getElementById('board');
+    const totals = document.getElementById('totals');
+
+    function resultsUrl() {
+      const u = new URL('/results', API);
+      u.searchParams.set('event', EVENT_ID);
+      return u.toString();
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch(resultsUrl(), { credentials: 'include' });
+        const data = await res.json();
+        const entries = data.entries || [];
+        const total = data.totalVotes || 0;
+        totals.textContent = total ? `${total} vote${total === 1 ? '' : 's'} in` : 'No votes yet';
+        if (!entries.length) {
+          board.innerHTML = '<div class="empty">Finalists will show here once staff uploads the looks.</div>';
+          return;
+        }
+        const max = Math.max(1, ...entries.map((e) => e.votes));
+        board.innerHTML = entries.map((e, i) => {
+          const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
+          const pct = Math.round((e.votes / max) * 100);
+          return `<div class="row${i === 0 && e.votes ? ' lead' : ''}">
+            <img class="thumb" src="${src}" alt="">
+            <div>
+              <div class="rank">${i === 0 && e.votes ? '👑 Leading' : '#' + (i + 1)}</div>
+              <div class="name">${e.name}</div>
+              <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+              <div class="count">${e.votes} vote${e.votes === 1 ? '' : 's'}</div>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (_) {
+        totals.textContent = 'Could not reach the vote board';
+      }
+    }
+    refresh();
+    setInterval(refresh, 4000);
+  </script>
+</body>
+</html>

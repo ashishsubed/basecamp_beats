@@ -137,6 +137,26 @@
       font-size: 0.88rem;
     }
 
+    .pickers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pick {
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      background: rgba(0, 210, 255, 0.08);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 8px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pick:hover { background: rgba(0, 210, 255, 0.16); }
+
     input[type="file"] {
       display: none;
     }
@@ -265,6 +285,38 @@
       color: var(--bb-cyan);
     }
 
+    .live-show {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .live-heading {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--bb-cyan);
+      margin-bottom: 12px;
+    }
+
+    .live-empty {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.9rem;
+    }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .live-grid img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+    }
+
     .success-panel {
       text-align: center;
       padding: 12px 8px 8px;
@@ -326,15 +378,20 @@
     <div class="card">
       <div id="uploadFlow">
         <div class="title-block">
-          <h1>Photo upload</h1>
-          <p>Share a moment from the night</p>
+          <h1>Live photos</h1>
+          <p>Halloween 2026 — add a shot, then watch tonight’s wall below</p>
         </div>
 
-        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose image">
+        <div class="dropzone" id="dropzone">
           <div class="icon" aria-hidden="true">📷</div>
-          <h2>Tap or drop your photo</h2>
-          <p class="hint">JPG, PNG, or HEIC · max 10 MB</p>
-          <input type="file" id="fileInput" accept="image/*" />
+          <h2>Add a photo</h2>
+          <p class="hint">From the camera or your library · max 10 MB</p>
+          <div class="pickers">
+            <button type="button" class="pick" id="takePhoto">Take photo</button>
+            <button type="button" class="pick" id="choosePhoto">Photo library</button>
+          </div>
+          <input type="file" id="fileCamera" accept="image/*" capture="environment" />
+          <input type="file" id="fileLibrary" accept="image/*" />
         </div>
 
         <div class="preview" id="preview">
@@ -350,7 +407,9 @@
         <div class="status" id="status" role="alert"></div>
 
         <div class="footer-link">
-          <a href="/slideshow.html">View live slideshow →</a>
+          <a href="/slideshow.html?event=halloween-2026">Full-screen slideshow →</a>
+          &nbsp;·&nbsp;
+          <a href="/vote.html">Vote costumes →</a>
         </div>
       </div>
 
@@ -361,18 +420,30 @@
         <p class="success-hint">Use the button below or refresh the page to share another photo.</p>
         <button type="button" class="btn btn-ghost btn-another" id="uploadAnotherBtn">Upload another photo</button>
         <div class="footer-link">
-          <a href="/slideshow.html">View live slideshow →</a>
+          <a href="/slideshow.html?event=halloween-2026">Full-screen slideshow →</a>
+          &nbsp;·&nbsp;
+          <a href="/vote.html">Vote costumes →</a>
         </div>
+      </div>
+
+      <div class="live-show">
+        <h2 class="live-heading">Tonight’s wall</h2>
+        <p class="live-empty" id="liveEmpty">Nothing on the wall yet — add one above.</p>
+        <div class="live-grid" id="liveGrid"></div>
       </div>
     </div>
   </div>
 
+  <script src="/js/compress-image.js"></script>
   <script>
-    /** Rate limits: Worker only (429 + Retry-After). */
-    const UPLOAD_URL = 'https://bb-photo-upload.beatsbasecamp.workers.dev/upload';
+    /** Rate limits: Worker only (429 + Retry-After). Isolated to this event. */
+    const EVENT_ID = 'halloween-2026';
+    const UPLOAD_URL = 'https://bb-photo-upload.beatsbasecamp.workers.dev/upload?event=' + encodeURIComponent(EVENT_ID);
+    const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
 
     const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
+    const fileCamera = document.getElementById('fileCamera');
+    const fileLibrary = document.getElementById('fileLibrary');
     const preview = document.getElementById('preview');
     const previewImg = document.getElementById('previewImg');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -392,7 +463,8 @@
       previewImg.removeAttribute('src');
       preview.classList.remove('is-on');
       dropzone.style.display = 'block';
-      fileInput.value = '';
+      fileCamera.value = '';
+      fileLibrary.value = '';
       uploadBtn.disabled = false;
       btnLabel.textContent = 'Upload';
       hideStatus();
@@ -407,16 +479,13 @@
 
     document.getElementById('uploadAnotherBtn').addEventListener('click', showUploadUI);
 
-    dropzone.addEventListener('click', () => {
-      // Lets user pick the same file again (change event often skips if path unchanged)
-      fileInput.value = '';
-      fileInput.click();
+    document.getElementById('takePhoto').addEventListener('click', () => {
+      fileCamera.value = '';
+      fileCamera.click();
     });
-    dropzone.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        fileInput.click();
-      }
+    document.getElementById('choosePhoto').addEventListener('click', () => {
+      fileLibrary.value = '';
+      fileLibrary.click();
     });
 
     ['dragover', 'dragenter'].forEach((ev) => {
@@ -434,14 +503,16 @@
       if (f) pickFile(f);
     });
 
-    fileInput.addEventListener('change', () => {
-      const f = fileInput.files?.[0];
+    function onPicked(input) {
+      const f = input.files?.[0];
       if (f) pickFile(f);
-    });
+    }
+    fileCamera.addEventListener('change', () => onPicked(fileCamera));
+    fileLibrary.addEventListener('change', () => onPicked(fileLibrary));
 
     clearBtn.addEventListener('click', reset);
 
-    function pickFile(f) {
+    async function pickFile(f) {
       if (uploadFlow.hidden) {
         showUploadUI();
       }
@@ -453,7 +524,8 @@
         toast('File must be under 10 MB.', 'err');
         return;
       }
-      file = f;
+      toast('Preparing photo…', 'ok');
+      file = await compressImageFile(f, { maxEdge: 1600, quality: 0.78 });
       const r = new FileReader();
       r.onload = () => {
         previewImg.src = r.result;
@@ -461,7 +533,7 @@
         dropzone.style.display = 'none';
         hideStatus();
       };
-      r.readAsDataURL(f);
+      r.readAsDataURL(file);
     }
 
     uploadBtn.addEventListener('click', async () => {
@@ -494,11 +566,11 @@
           hideStatus();
           uploadFlow.hidden = true;
           successPanel.hidden = false;
-          // Update success message if photo is pending review
-          if (data.status === 'pending' && data.message) {
+          if (data.message) {
             const lead = successPanel.querySelector('.success-lead');
             if (lead) lead.textContent = data.message;
           }
+          loadTonightWall();
           return;
         } else {
           toast(data.error || 'Upload failed.', 'err');
@@ -522,12 +594,38 @@
       statusEl.textContent = '';
     }
 
+    async function loadTonightWall() {
+      const emptyEl = document.getElementById('liveEmpty');
+      const gridEl = document.getElementById('liveGrid');
+      if (!emptyEl || !gridEl) return;
+      try {
+        const res = await fetch(`${GALLERY_BASE}/images?event=${encodeURIComponent(EVENT_ID)}`);
+        const data = await res.json();
+        const images = data.images || [];
+        if (!images.length) {
+          emptyEl.hidden = false;
+          gridEl.innerHTML = '';
+          return;
+        }
+        emptyEl.hidden = true;
+        gridEl.innerHTML = images.map((item) => {
+          const raw = item.thumbUrl || item.url;
+          const src = raw.startsWith('http') ? raw : new URL(raw, GALLERY_BASE).href;
+          return `<img src="${src}" alt="Live photo" loading="lazy" decoding="async">`;
+        }).join('');
+      } catch (_) {
+        emptyEl.textContent = 'Could not load tonight’s photos.';
+      }
+    }
+    loadTonightWall();
+
     function reset() {
       file = null;
       previewImg.removeAttribute('src');
       preview.classList.remove('is-on');
       dropzone.style.display = 'block';
-      fileInput.value = '';
+      fileCamera.value = '';
+      fileLibrary.value = '';
       uploadBtn.disabled = false;
       btnLabel.textContent = 'Upload';
       hideStatus();

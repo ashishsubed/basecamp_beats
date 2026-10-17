@@ -374,7 +374,7 @@
   </div>
 
   <header class="top-bar">
-    <h1>Live photos</h1>
+    <h1 id="eventTitle">Live photos</h1>
     <div class="top-bar-actions">
       <div class="counter"><span id="currentSlide">0</span> / <span id="totalSlides">0</span></div>
     </div>
@@ -383,7 +383,7 @@
   <div class="stage" id="stage">
     <div class="no-photos" id="noPhotos" hidden>
       <h2>No photos yet</h2>
-      <p>Images will appear here as guests upload them.</p>
+      <p id="emptyCopy">Images will appear here as guests upload them.</p>
     </div>
   </div>
 
@@ -393,7 +393,35 @@
 
   <script>
     const GALLERY_BASE = 'https://bb-photo-gallery.beatsbasecamp.workers.dev';
-    const GALLERY_LIST_URL = `${GALLERY_BASE}/images`;
+    const EVENT_TITLES = {
+      'halloween-2026': 'Halloween 2026',
+      'naya-saal-naya-nepal': 'Naya Saal Naya Nepal',
+    };
+
+    function eventFromLocation() {
+      const q = new URLSearchParams(location.search).get('event');
+      if (q && /^[a-z0-9-]{3,40}$/i.test(q)) return q.toLowerCase();
+      const parts = location.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+      const i = parts.findIndex((p) => p.replace('.html', '') === 'slideshow');
+      if (i >= 0 && parts[i + 1]) {
+        const slug = parts[i + 1].replace('.html', '').toLowerCase();
+        if (/^[a-z0-9-]{3,40}$/.test(slug)) return slug;
+      }
+      return 'halloween-2026';
+    }
+
+    const EVENT_ID = eventFromLocation();
+    const EVENT_TITLE = EVENT_TITLES[EVENT_ID] || EVENT_ID.replace(/-/g, ' ');
+    const GALLERY_LIST_URL = `${GALLERY_BASE}/images?event=${encodeURIComponent(EVENT_ID)}`;
+    document.title = EVENT_TITLE + ' — Basecamp Beats';
+    const titleEl = document.getElementById('eventTitle');
+    if (titleEl) titleEl.textContent = EVENT_TITLE;
+    const emptyCopy = document.getElementById('emptyCopy');
+    if (emptyCopy) {
+      emptyCopy.textContent = EVENT_ID === 'halloween-2026'
+        ? 'Tonight’s photos will appear here as guests upload them.'
+        : 'Photos from this night will show here.';
+    }
     const SLIDE_MS = 3500;
     const REFRESH_MS = 30000;
 
@@ -436,7 +464,10 @@
         .map((item) => {
           const key = (item.key && String(item.key)) || extractKeyFromUrl(item.url);
           const path = item.url || (key ? `/image/${encodeURIComponent(key)}` : '');
-          const url = path.startsWith('http') ? path : new URL(path, GALLERY_BASE).href;
+          const built = path.startsWith('http') ? new URL(path) : new URL(path, GALLERY_BASE);
+          if (!built.searchParams.get('event')) built.searchParams.set('event', EVENT_ID);
+          built.searchParams.set('w', '1600');
+          const url = built.href;
           return { key, url };
         })
         .filter((p) => p.key);
@@ -464,10 +495,24 @@
       progressBar.classList.add('is-running');
     }
 
+    function hydrateAround(i) {
+      const slides = stage.querySelectorAll('.slide');
+      const n = slides.length;
+      if (!n) return;
+      for (const offset of [0, 1, n - 1]) {
+        const el = slides[(i + offset) % n];
+        const img = el && el.querySelector('img');
+        if (img && img.dataset.src && img.getAttribute('src') !== img.dataset.src) {
+          img.src = img.dataset.src;
+        }
+      }
+    }
+
     function showIndex(i) {
       const slides = stage.querySelectorAll('.slide');
       if (!slides.length) return;
       index = ((i % slides.length) + slides.length) % slides.length;
+      hydrateAround(index);
       slides.forEach((el, j) => el.classList.toggle('is-on', j === index));
       updateCounter();
     }
@@ -497,14 +542,16 @@
         div.className = 'slide' + (i === 0 ? ' is-on' : '');
         div.dataset.key = photo.key;
         const img = document.createElement('img');
-        img.src = photo.url;
+        img.dataset.src = photo.url;
         img.alt = `Photo ${i + 1}`;
-        img.loading = i === 0 ? 'eager' : 'lazy';
+        img.decoding = 'async';
+        if (i === 0) img.src = photo.url;
         div.appendChild(img);
         stage.appendChild(div);
       });
 
       index = 0;
+      hydrateAround(0);
       updateCounter();
       loadingScreen.classList.add('is-hidden');
       startAuto();

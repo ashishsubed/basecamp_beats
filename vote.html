@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote the costumes — Basecamp Beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', system-ui, sans-serif;
+      color: #fff;
+      background: #050201;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 0%, rgba(255, 122, 46, 0.22), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 10% 100%, rgba(194, 65, 45, 0.12), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 18px 48px; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .back { color: rgba(255,255,255,0.55); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+    .back:hover { color: #e8c07a; }
+    .results-link {
+      color: #140804;
+      background: linear-gradient(135deg, #ff8a3d, #e8c07a);
+      text-decoration: none;
+      font-weight: 800;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      text-align: center;
+      background: linear-gradient(135deg, #ffb36a, #ff7a2e, #e8c07a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .lede {
+      text-align: center;
+      color: rgba(255,255,255,0.78);
+      max-width: 560px;
+      margin: 0 auto 12px;
+      line-height: 1.6;
+    }
+    .rule {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #e8c07a;
+      margin-bottom: 28px;
+    }
+    .status {
+      text-align: center;
+      min-height: 1.4em;
+      margin-bottom: 18px;
+      font-weight: 600;
+      color: #e8c07a;
+    }
+    .status.err { color: #f87171; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255, 122, 46, 0.28);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255, 106, 32, 0.2); }
+    .card.is-mine {
+      border-color: #e8c07a;
+      box-shadow: 0 0 0 2px rgba(232, 192, 122, 0.45);
+    }
+    .card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      cursor: pointer;
+      background: #1a0c06;
+    }
+    .meta { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .name { font-weight: 700; font-size: 1.05rem; }
+    .vote-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff7a2e, #c2412d);
+      color: #fff;
+    }
+    .vote-btn:hover { filter: brightness(1.08); }
+    .vote-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .vote-btn.is-mine {
+      background: linear-gradient(135deg, #e8c07a, #ffb36a);
+      color: #140804;
+    }
+    .empty, .loading {
+      text-align: center;
+      padding: 48px 16px;
+      color: rgba(255,255,255,0.65);
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 20;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92%; max-height: 90vh; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="back" href="/">← Basecamp Beats</a>
+      <a class="results-link" href="/results.html">Live results →</a>
+    </div>
+    <h1>Vote the costume</h1>
+    <p class="lede">Finalists from the walk show. Pick your favorite — winner takes <strong>$100</strong> and the trophy.</p>
+    <p class="rule">One vote per phone. You can switch looks. Incognito still counts as the same phone.</p>
+    <div class="status" id="status"></div>
+    <div id="grid" class="loading">Loading looks…</div>
+  </div>
+  <div class="lightbox" id="lightbox"><img id="lightboxImg" alt=""></div>
+  <script src="https://openfpcdn.io/fingerprintjs/v4/iife.min.js"></script>
+  <script>
+    const API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
+    const EVENT_ID = 'halloween-2026';
+    const grid = document.getElementById('grid');
+    const statusEl = document.getElementById('status');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    let visitorId = '';
+
+    async function ensureVisitor() {
+      if (visitorId) return visitorId;
+      try {
+        if (typeof FingerprintJS !== 'undefined') {
+          const fp = await Promise.race([
+            FingerprintJS.load().then((agent) => agent.get()),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('fingerprint timeout')), 4000)),
+          ]);
+          if (fp && fp.visitorId) {
+            visitorId = fp.visitorId;
+            return visitorId;
+          }
+        }
+      } catch (_) {}
+      visitorId = 'fb_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      return visitorId;
+    }
+
+    function voterHeader() {
+      return { 'X-Visitor-Id': visitorId };
+    }
+
+    function setStatus(msg, err) {
+      statusEl.textContent = msg || '';
+      statusEl.className = 'status' + (err ? ' err' : '');
+    }
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+    async function api(path, opts = {}) {
+      const u = new URL(path, API);
+      u.searchParams.set('event', EVENT_ID);
+      const res = await fetch(u.toString(), {
+        credentials: 'include',
+        ...opts,
+        headers: { ...voterHeader(), ...(opts.headers || {}) },
+      });
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    let votedFor = null;
+
+    function render(entries) {
+      if (!entries.length) {
+        grid.className = 'empty';
+        grid.textContent = 'Finalists will appear here after the walk show.';
+        return;
+      }
+      grid.className = 'grid';
+      grid.innerHTML = '';
+      entries.forEach((e) => {
+        const mine = votedFor === e.key;
+        const card = document.createElement('article');
+        card.className = 'card' + (mine ? ' is-mine' : '');
+        const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
+        const full = e.url.startsWith('http') ? e.url : API + e.url;
+        card.innerHTML = `
+          <img src="${src}" alt="${e.name}" loading="lazy" decoding="async">
+          <div class="meta">
+            <div class="name">${mine ? '★ ' : ''}${e.name}</div>
+            <button class="vote-btn${mine ? ' is-mine' : ''}" type="button">${mine ? 'Your vote' : 'Vote this look'}</button>
+          </div>`;
+        card.querySelector('img').addEventListener('click', () => {
+          lightboxImg.src = full;
+          lightbox.classList.add('open');
+        });
+        card.querySelector('button').addEventListener('click', () => vote(e.key));
+        grid.appendChild(card);
+      });
+    }
+
+    async function vote(key) {
+      setStatus('Counting…');
+      try {
+        await ensureVisitor();
+        const data = await api('/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...voterHeader() },
+          body: JSON.stringify({ key }),
+        });
+        votedFor = data.votedFor;
+        setStatus(data.message || 'Vote counted.');
+        const list = await api('/entries');
+        render(list.entries || []);
+      } catch (err) {
+        setStatus(err.message, true);
+      }
+    }
+
+    async function showLooks() {
+      const list = await api('/entries');
+      render(list.entries || []);
+      if (votedFor) setStatus('You already picked a look. Tap another to switch.');
+    }
+
+    async function boot() {
+      try {
+        await showLooks();
+      } catch (err) {
+        grid.className = 'empty';
+        grid.textContent = 'Could not load the contest. Try again in a moment.';
+        setStatus(err.message, true);
+        return;
+      }
+      try {
+        await ensureVisitor();
+        const me = await api('/me');
+        votedFor = me.votedFor;
+        if (votedFor) {
+          const list = await api('/entries');
+          render(list.entries || []);
+          setStatus('You already picked a look. Tap another to switch.');
+        }
+      } catch (_) {}
+    }
+    boot();
+  </script>
+</body>
+</html>
