@@ -464,6 +464,15 @@
 
     let file = null;
 
+    function deviceId() {
+      let id = localStorage.getItem('bb_device_id');
+      if (!id) {
+        id = 'd_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem('bb_device_id', id);
+      }
+      return id;
+    }
+
     /** After upload success or bfcache restore — show form again and clear state */
     function showUploadUI() {
       uploadFlow.hidden = false;
@@ -553,6 +562,7 @@
       try {
         const fd = new FormData();
         fd.append('file', file);
+        fd.append('device', deviceId());
         const res = await fetch(UPLOAD_URL, { method: 'POST', body: fd });
 
         let data = {};

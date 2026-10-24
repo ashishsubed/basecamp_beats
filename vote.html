@@ -210,6 +210,10 @@
         : `All ${maxVotes} votes used · tap a pick to undo`;
     }
 
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
     function shuffle(list) {
       const a = list.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -293,9 +297,9 @@
         const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
         const full = e.url.startsWith('http') ? e.url : API + e.url;
         card.innerHTML = `
-          <img src="${src}" alt="${e.name}" loading="lazy" decoding="async">
+          <img src="${src}" alt="${esc(e.name)}" loading="lazy" decoding="async">
           <div class="meta">
-            <div class="name">${mine ? '★ ' : ''}${e.name}</div>
+            <div class="name">${mine ? '★ ' : ''}${esc(e.name)}</div>
             <button class="vote-btn${mine ? ' is-mine' : ''}${!mine && maxVotes > 1 && picks.length >= maxVotes ? ' is-spent' : ''}" type="button">${mine ? 'Your vote ✓' : 'Vote'}</button>
           </div>`;
         card.querySelector('img').addEventListener('click', () => {

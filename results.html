@@ -183,6 +183,10 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
 
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
     function srcOf(e) {
       const path = e.url || e.thumbUrl || '';
       return path.startsWith('http') ? path : API + path;
@@ -230,10 +234,10 @@
           const src = srcOf(e);
           const pct = Math.round((e.votes / max) * 100);
           return `<article class="card" data-src="${src}">
-            <img src="${src}" alt="${e.name}">
+            <img src="${src}" alt="${esc(e.name)}">
             <div class="pad">
               <div class="rank">${label}</div>
-              <div class="name">${e.name}</div>
+              <div class="name">${esc(e.name)}</div>
               <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
               <div class="count">${votesText(e.votes)}</div>
             </div>
@@ -249,10 +253,10 @@
           const lead = leaders[0];
           const leadSrc = srcOf(lead);
           leadHtml = `<article class="lead" data-src="${leadSrc}">
-            <img src="${leadSrc}" alt="${lead.name}">
+            <img src="${leadSrc}" alt="${esc(lead.name)}">
             <div class="lead-meta">
               <div class="rank">Leading</div>
-              <div class="name">${lead.name}</div>
+              <div class="name">${esc(lead.name)}</div>
               <div class="bar-wrap"><div class="bar" style="width:100%"></div></div>
               <div class="count">${votesText(lead.votes)}</div>
             </div>

@@ -25,7 +25,8 @@
 const DEFAULT_EVENT = "halloween-2026";
 const MAX_BYTES = 10 * 1024 * 1024;
 const RATE_WINDOW_SEC = 600;
-const RATE_MAX = 5;
+const RATE_MAX_DEVICE = 15;
+const RATE_MAX_IP = 300;
 
 function resolveEvent(request, env) {
   const q = new URL(request.url).searchParams.get("event");
@@ -98,9 +99,15 @@ function clientIp(request) {
   );
 }
 
-async function rateLimit(env, event, ip) {
+function deviceIdFrom(form) {
+  const raw = String(form.get("device") || "").trim();
+  return /^[a-zA-Z0-9_-]{8,80}$/.test(raw) ? raw : "";
+}
+
+async function rateLimit(env, event, ip, device) {
   if (!env.PHOTO_RATE_LIMIT) return { ok: true };
-  const key = `${event}:rl:${ip}`;
+  const key = device ? `${event}:rl:d:${device}` : `${event}:rl:${ip}`;
+  const max = device ? RATE_MAX_DEVICE : RATE_MAX_IP;
   const raw = await env.PHOTO_RATE_LIMIT.get(key);
   let hits = 0;
   try {
@@ -108,7 +115,7 @@ async function rateLimit(env, event, ip) {
   } catch {
     hits = 0;
   }
-  if (hits >= RATE_MAX) {
+  if (hits >= max) {
     return { ok: false, retryAfter: RATE_WINDOW_SEC };
   }
   await env.PHOTO_RATE_LIMIT.put(key, JSON.stringify({ hits: hits + 1 }), {
@@ -128,7 +135,13 @@ export default {
     const p = prefixes(resolveEvent(request, env));
 
     if (path === "/upload" && request.method === "POST") {
-      const gated = await rateLimit(env, p.event, clientIp(request));
+      let form;
+      try {
+        form = await request.formData();
+      } catch {
+        return json(request, { error: "No file" }, 400);
+      }
+      const gated = await rateLimit(env, p.event, clientIp(request), deviceIdFrom(form));
       if (!gated.ok) {
         return json(
           request,
@@ -141,7 +154,6 @@ export default {
         );
       }
 
-      const form = await request.formData();
       const file = form.get("file");
       if (!file || typeof file === "string") {
         return json(request, { error: "No file" }, 400);
@@ -154,7 +166,7 @@ export default {
         return json(request, { error: "Please upload an image." }, 400);
       }
       const safeName = (file.name || "photo.jpg").replace(/[^\w.\-]+/g, "_");
-      const key = `${p.live}${Date.now()}-${safeName}`;
+      const key = `${p.live}${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safeName}`;
       await env.PHOTOS_BUCKET.put(key, file.stream(), {
         httpMetadata: { contentType: type },
       });

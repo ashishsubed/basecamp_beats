@@ -274,7 +274,7 @@
         return `<div class="look">
           <img src="${src}" alt="">
           <div class="pad">
-            <div><strong>${e.name}</strong></div>
+            <div><strong>${String(e.name).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}</strong></div>
             <div>${e.votes} vote${e.votes === 1 ? '' : 's'}</div>
             <button class="danger" data-key="${e.key}">Remove</button>
           </div>
