@@ -137,6 +137,7 @@
       color: #fff;
     }
     .vote-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .vote-btn.is-spent { opacity: 0.4; }
     .vote-btn.is-mine {
       background: linear-gradient(135deg, #e8c07a, #ffb36a);
       color: #140804;
@@ -168,7 +169,7 @@
     </div>
     <span class="kicker">Costume competition</span>
     <h1>Vote costumes</h1>
-    <p class="lede">Tap the look you want to win.</p>
+    <p class="lede" id="lede">You get 3 votes. Spread them across your favorite looks.</p>
     <p class="prize">$100 + trophy</p>
     <div class="status" id="status"></div>
     <div id="grid" class="loading">Loading looks…</div>
@@ -183,8 +184,31 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     let visitorId = '';
-    let votedFor = null;
+    let picks = [];
+    let maxVotes = 3;
     let orderKeys = null;
+
+    function applyVoteState(data) {
+      if (Array.isArray(data.votes)) {
+        picks = data.votes;
+        maxVotes = data.maxVotes || maxVotes;
+      } else if ('votedFor' in data) {
+        picks = data.votedFor ? [data.votedFor] : [];
+        maxVotes = 1;
+      }
+      document.getElementById('lede').textContent = maxVotes > 1
+        ? `You get ${maxVotes} votes. Spread them across your favorite looks.`
+        : 'Tap the look you want to win.';
+    }
+
+    function votesLine() {
+      const left = maxVotes - picks.length;
+      if (maxVotes === 1) return picks.length ? 'You picked a look. Tap another to switch.' : '';
+      if (!picks.length) return '';
+      return left
+        ? `${left} of ${maxVotes} votes left · tap a pick to undo`
+        : `All ${maxVotes} votes used · tap a pick to undo`;
+    }
 
     function shuffle(list) {
       const a = list.slice();
@@ -263,7 +287,7 @@
       grid.className = 'grid';
       grid.innerHTML = '';
       list.forEach((e) => {
-        const mine = votedFor === e.key;
+        const mine = picks.includes(e.key);
         const card = document.createElement('article');
         card.className = 'card' + (mine ? ' is-mine' : '');
         const src = (e.thumbUrl || e.url).startsWith('http') ? (e.thumbUrl || e.url) : API + (e.thumbUrl || e.url);
@@ -272,7 +296,7 @@
           <img src="${src}" alt="${e.name}" loading="lazy" decoding="async">
           <div class="meta">
             <div class="name">${mine ? '★ ' : ''}${e.name}</div>
-            <button class="vote-btn${mine ? ' is-mine' : ''}" type="button">${mine ? 'Your vote' : 'Vote'}</button>
+            <button class="vote-btn${mine ? ' is-mine' : ''}${!mine && maxVotes > 1 && picks.length >= maxVotes ? ' is-spent' : ''}" type="button">${mine ? 'Your vote ✓' : 'Vote'}</button>
           </div>`;
         card.querySelector('img').addEventListener('click', () => {
           lightboxImg.src = full;
@@ -292,7 +316,7 @@
           headers: { 'Content-Type': 'application/json', ...voterHeader() },
           body: JSON.stringify({ key }),
         });
-        votedFor = data.votedFor;
+        applyVoteState(data);
         setStatus(data.message || 'Vote counted.');
         const list = await api('/entries');
         render(list.entries || []);
@@ -304,7 +328,6 @@
     async function showLooks() {
       const list = await api('/entries');
       render(list.entries || []);
-      if (votedFor) setStatus('You already picked a look. Tap another to switch.');
     }
 
     async function boot() {
@@ -319,11 +342,11 @@
       try {
         await ensureVisitor();
         const me = await api('/me');
-        votedFor = me.votedFor;
-        if (votedFor) {
+        applyVoteState(me);
+        if (picks.length) {
           const list = await api('/entries');
           render(list.entries || []);
-          setStatus('You already picked a look. Tap another to switch.');
+          setStatus(votesLine());
         }
       } catch (_) {}
     }

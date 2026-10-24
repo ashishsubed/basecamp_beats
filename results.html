@@ -73,6 +73,27 @@
       display: block;
     }
     .lead-meta { padding: 16px 16px 18px; }
+    .tie-banner {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #140804;
+      background: linear-gradient(135deg, #ffb36a, #e8c07a);
+      border-radius: 999px;
+      padding: 7px 14px;
+      margin: 0 auto 12px;
+      width: fit-content;
+    }
+    .co-leads {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .co-leads .card { border-color: rgba(232, 192, 122, 0.55); }
+    .rank-tie { color: rgba(255,255,255,0.5); font-weight: 700; }
     .rank {
       font-weight: 800;
       color: #e8c07a;
@@ -192,31 +213,58 @@
           return;
         }
         const max = Math.max(1, ...entries.map((e) => e.votes));
-        const [lead, ...rest] = entries;
-        const leadSrc = srcOf(lead);
-        const leadPct = Math.round((lead.votes / max) * 100);
-        const leadHtml = `<article class="lead" data-src="${leadSrc}">
-            <img src="${leadSrc}" alt="${lead.name}">
-            <div class="lead-meta">
-              <div class="rank">${lead.votes ? 'Leading' : '#' + 1}</div>
-              <div class="name">${lead.name}</div>
-              <div class="bar-wrap"><div class="bar" style="width:${leadPct}%"></div></div>
-              <div class="count">${lead.votes} vote${lead.votes === 1 ? '' : 's'}</div>
-            </div>
-          </article>`;
-        const restHtml = rest.length ? `<div class="grid">${rest.map((e, i) => {
+        const countOf = new Map();
+        entries.forEach((e) => countOf.set(e.votes, (countOf.get(e.votes) || 0) + 1));
+        let rank = 0;
+        entries.forEach((e, i) => {
+          if (i === 0 || e.votes !== entries[i - 1].votes) rank = i + 1;
+          e.rank = rank;
+          e.tied = countOf.get(e.votes) > 1;
+        });
+
+        const votesText = (n) => `${n} vote${n === 1 ? '' : 's'}`;
+        const rankLabel = (e) => e.tied
+          ? `T-${e.rank} <span class="rank-tie">· tied</span>`
+          : `#${e.rank}`;
+        const card = (e, label) => {
           const src = srcOf(e);
           const pct = Math.round((e.votes / max) * 100);
           return `<article class="card" data-src="${src}">
             <img src="${src}" alt="${e.name}">
             <div class="pad">
-              <div class="rank">#${i + 2}</div>
+              <div class="rank">${label}</div>
               <div class="name">${e.name}</div>
               <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
-              <div class="count">${e.votes} vote${e.votes === 1 ? '' : 's'}</div>
+              <div class="count">${votesText(e.votes)}</div>
             </div>
           </article>`;
-        }).join('')}</div>` : '';
+        };
+
+        const leaders = entries.filter((e) => e.rank === 1);
+        const rest = entries.filter((e) => e.rank !== 1);
+        let leadHtml;
+        if (!total) {
+          leadHtml = '';
+        } else if (leaders.length === 1) {
+          const lead = leaders[0];
+          const leadSrc = srcOf(lead);
+          leadHtml = `<article class="lead" data-src="${leadSrc}">
+            <img src="${leadSrc}" alt="${lead.name}">
+            <div class="lead-meta">
+              <div class="rank">Leading</div>
+              <div class="name">${lead.name}</div>
+              <div class="bar-wrap"><div class="bar" style="width:100%"></div></div>
+              <div class="count">${votesText(lead.votes)}</div>
+            </div>
+          </article>`;
+        } else {
+          leadHtml = `<div class="tie-banner">${leaders.length}-way tie for the lead</div>
+            <div class="co-leads">${leaders.map((e) => card(e, 'Tied for 1st')).join('')}</div>`;
+        }
+        const others = total ? rest : entries;
+        const restHtml = others.length
+          ? `<div class="grid">${others.map((e) => card(e, total ? rankLabel(e) : 'No votes yet')).join('')}</div>`
+          : '';
         board.innerHTML = leadHtml + restHtml;
         board.querySelectorAll('[data-src]').forEach((el) => {
           el.addEventListener('click', () => openPhoto(el.dataset.src));

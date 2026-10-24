@@ -13,7 +13,7 @@
  *   GET  /image/:key
  *   GET  /results
  *   GET  /me            requires X-Visitor-Id (FingerprintJS)
- *   POST /vote          { key }  requires X-Visitor-Id
+ *   POST /vote          { key }  requires X-Visitor-Id — toggles a pick; up to MAX_VOTES distinct looks
  *
  * Staff (Authorization: Bearer MODERATION_SECRET):
  *   POST   /entries     multipart: file, name
@@ -24,6 +24,20 @@
  */
 
 const DEFAULT_EVENT = "halloween-2026";
+const MAX_VOTES = 3;
+
+function parsePicks(raw, entries) {
+  if (!raw) return [];
+  let picks;
+  try {
+    picks = raw.startsWith("[") ? JSON.parse(raw) : [raw];
+  } catch {
+    picks = [];
+  }
+  if (!Array.isArray(picks)) return [];
+  const live = new Set(entries.map((e) => e.key));
+  return [...new Set(picks.map(String))].filter((key) => live.has(key));
+}
 
 function resolveEvent(request, env) {
   const q = new URL(request.url).searchParams.get("event");
@@ -204,14 +218,15 @@ export default {
       const entries = await loadEntries(env, k);
       const tally = await loadTally(env, k);
       const ranked = entries
-        .map((e) => ({
+        .map((e, order) => ({
           key: e.key,
           name: e.name || "Costume",
           url: imageUrl(e.key, k.event, 900),
           thumbUrl: imageUrl(e.key, k.event, 480),
           votes: Number(tally[e.key] || 0),
+          order,
         }))
-        .sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
+        .sort((a, b) => b.votes - a.votes || a.order - b.order);
       const totalVotes = ranked.reduce((s, e) => s + e.votes, 0);
       return json(request, { event: k.event, entries: ranked, totalVotes });
     }
@@ -232,40 +247,60 @@ export default {
       }
 
       const voteKey = k.vote(id);
-      const previous = await env.COSTUME_VOTES.get(voteKey);
-      if (previous === key) {
+      const picks = parsePicks(await env.COSTUME_VOTES.get(voteKey), entries);
+      const removing = picks.includes(key);
+
+      if (!removing && picks.length >= MAX_VOTES) {
         return json(request, {
-          ok: true,
-          votedFor: key,
-          already: true,
-          message: "You already voted for this look.",
-        });
+          error: `You've used all ${MAX_VOTES} votes. Tap one of your picks to free a vote.`,
+          votes: picks,
+          votesLeft: 0,
+          maxVotes: MAX_VOTES,
+        }, 409);
       }
 
       const tally = await loadTally(env, k);
-      if (previous && tally[previous] > 0) {
-        tally[previous] = Number(tally[previous]) - 1;
+      let next;
+      if (removing) {
+        next = picks.filter((p) => p !== key);
+        tally[key] = Math.max(0, Number(tally[key] || 0) - 1);
+      } else {
+        next = [...picks, key];
+        tally[key] = Number(tally[key] || 0) + 1;
       }
-      tally[key] = Number(tally[key] || 0) + 1;
       await saveTally(env, k, tally);
-      await env.COSTUME_VOTES.put(voteKey, key);
+      if (next.length) {
+        await env.COSTUME_VOTES.put(voteKey, JSON.stringify(next));
+      } else {
+        await env.COSTUME_VOTES.delete(voteKey);
+      }
 
+      const left = MAX_VOTES - next.length;
       return json(request, {
         ok: true,
-        votedFor: key,
-        switched: Boolean(previous),
-        message: previous ? "Vote moved to this look." : "Vote counted.",
+        votes: next,
+        votesLeft: left,
+        maxVotes: MAX_VOTES,
+        removed: removing,
+        message: removing
+          ? `Vote removed. ${left} left.`
+          : left
+            ? `Vote counted. ${left} left.`
+            : "Vote counted. That was your last one.",
       });
     }
 
     if (path === "/me" && request.method === "GET") {
       const id = visitorIdFrom(request);
       if (!id) return json(request, { error: "Missing browser fingerprint." }, 400);
-      const votedFor = await env.COSTUME_VOTES.get(k.vote(id));
+      const entries = await loadEntries(env, k);
+      const picks = parsePicks(await env.COSTUME_VOTES.get(k.vote(id)), entries);
       return json(request, {
         event: k.event,
         voterId: id,
-        votedFor: votedFor || null,
+        votes: picks,
+        votesLeft: MAX_VOTES - picks.length,
+        maxVotes: MAX_VOTES,
       });
     }
 
