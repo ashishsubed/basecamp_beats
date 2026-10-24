@@ -596,11 +596,190 @@
     /* Top Navigation */
     .top-nav {
       display: flex;
-      gap: 20px;
+      gap: 12px;
       justify-content: center;
-      padding: 20px 20px 30px;
-      margin-bottom: 20px;
+      padding: 8px 20px 10px;
+      margin-bottom: 0;
       flex-wrap: wrap;
+    }
+
+    body > button.admin-link {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 5;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+    }
+
+    body > button.admin-link:hover,
+    body > button.admin-link.is-on {
+      color: #e8c07a;
+      border-color: rgba(232, 192, 122, 0.5);
+    }
+
+    .staff-tools {
+      display: none;
+      max-width: 520px;
+      margin: 0 auto 22px;
+      padding: 14px 16px 16px;
+      border-radius: 18px;
+      border: 1px dashed rgba(232, 192, 122, 0.45);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .staff-tools.is-on {
+      display: block;
+    }
+
+    .staff-tools-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #e8c07a;
+      margin-bottom: 10px;
+    }
+
+    .staff-tools-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .staff-tools-row a {
+      padding: 11px 8px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      background: rgba(255, 122, 46, 0.12);
+      border: 1px solid rgba(255, 122, 46, 0.35);
+    }
+
+    .staff-tools-row a:hover {
+      border-color: #ffb36a;
+    }
+
+    .staff-tools-row a.is-off {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .staff-warn {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #f8b26a;
+    }
+
+    body > .admin-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    body > .admin-modal.is-on {
+      display: flex;
+    }
+
+    .admin-modal form {
+      width: 100%;
+      max-width: 360px;
+      padding: 22px 20px 18px;
+      border-radius: 18px;
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.3);
+      text-align: left;
+    }
+
+    .admin-modal h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .admin-modal input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 179, 106, 0.3);
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font: inherit;
+      margin-bottom: 10px;
+    }
+
+    .admin-modal .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .admin-modal button {
+      flex: 1;
+      padding: 11px;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+    }
+
+    .admin-modal .go {
+      background: linear-gradient(135deg, #ff8a3d, #c2412d);
+      color: #fff;
+    }
+
+    .admin-modal .go:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .admin-modal .cancel {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-modal .err {
+      min-height: 1.2em;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f87171;
+    }
+
+
+    .more-links {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      flex-wrap: wrap;
+      padding: 4px 20px 28px;
+    }
+
+    .more-links a {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .more-links a:hover {
+      color: #e8c07a;
     }
     
     .top-nav-btn {
@@ -1644,21 +1823,24 @@
       }
       
       .top-nav {
-        padding: 15px 15px 25px;
-        gap: 12px;
-        margin-bottom: 15px;
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 8px 16px 6px;
+        gap: 10px;
       }
       
       .top-nav-btn {
-        padding: 14px 28px;
+        width: 100%;
+        padding: 14px 18px;
         font-size: 1rem;
-        flex: 1 1 auto;
-        min-width: 110px;
         justify-content: center;
       }
-      
-      .top-nav-btn span {
-        font-size: 1.2rem;
+
+      .more-links {
+        gap: 16px;
+        padding-bottom: 22px;
       }
       
       .faq-section {
@@ -1833,6 +2015,108 @@
         font-size: 0.85rem;
       }
     }
+
+    .hero h2,
+    .faq-container h2,
+    .previous-events-container h2,
+    .mission-content h2 {
+      font-family: 'Poppins', system-ui, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: none;
+      -webkit-text-fill-color: #fff;
+      color: #fff;
+      filter: none;
+    }
+
+    .card h3,
+    .past-event-content h3 {
+      background: none;
+      -webkit-text-fill-color: #fff;
+      color: #fff;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+    }
+
+    .faq-card h3 {
+      color: #ffb36a;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .detail-item,
+    .faq-card,
+    .past-event-card,
+    .value-item,
+    .mission-content,
+    .event-schedule {
+      background: rgba(18, 8, 4, 0.72);
+      border: 1px solid rgba(255, 179, 106, 0.18);
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .detail-item::before,
+    .faq-card::before,
+    .past-event-card::before,
+    .mission-content::before {
+      display: none;
+    }
+
+    .detail-item:hover,
+    .faq-card:hover,
+    .past-event-card:hover,
+    .value-item:hover {
+      transform: none;
+      background: rgba(18, 8, 4, 0.72);
+      border-color: rgba(255, 179, 106, 0.45);
+      box-shadow: none;
+    }
+
+    .past-event-card:hover .past-event-image img {
+      transform: none;
+    }
+
+    .event-poster,
+    .event-poster:hover {
+      animation: none;
+      transform: none;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(232, 192, 122, 0.25);
+    }
+
+    .section-subtitle {
+      font-style: normal;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .highlight-item {
+      background: rgba(255, 122, 46, 0.06);
+    }
+
+    .view-more {
+      background: transparent;
+      border: 1px solid rgba(255, 179, 106, 0.4);
+      color: #ffb36a;
+    }
+
+    .top-nav-btn::before {
+      display: none;
+    }
+
+    .top-nav-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .social-link {
+      border-width: 1px;
+      background: rgba(18, 8, 4, 0.6);
+    }
+
+    .event-badge {
+      background: linear-gradient(135deg, #ffb36a, #e8c07a);
+      color: #140804;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
   </style>
 </head>
 <body>
@@ -1855,6 +2139,18 @@
     <div class="haunt-vignette"></div>
     <div class="haunt-grain"></div>
   </div>
+  <button type="button" class="admin-link" id="adminBtn">Admin</button>
+  <div class="admin-modal" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <form id="adminForm">
+      <h2 id="adminTitle">Staff code</h2>
+      <input id="adminCode" type="password" autocomplete="current-password" placeholder="Moderation code" required>
+      <div class="row">
+        <button type="button" class="cancel" id="adminCancel">Cancel</button>
+        <button type="submit" class="go" id="adminGo">Unlock</button>
+      </div>
+      <p class="err" id="adminErr"></p>
+    </form>
+  </div>
   <header>
     <div class="logo-container">
     <img src="/logo.webp" alt="Basecamp Beats Logo">
@@ -1870,24 +2166,31 @@
   <!-- Navigation Links -->
   <nav class="top-nav">
     <a href="https://www.chautary.com/events/dmvs-first-nepali-halloween-costume-party-ok1rqd" target="_blank" rel="noopener noreferrer" class="top-nav-btn top-nav-ticket">
-      <span>🎫</span> Get Tickets
+      Get Tickets
     </a>
-    <a href="/vote.html" class="top-nav-btn top-nav-ticket">
-      <span>🎃</span> Vote costumes
+    <a href="/vote.html" class="top-nav-btn top-nav-primary">
+      Vote costumes
     </a>
     <a href="/upload.html" class="top-nav-btn top-nav-secondary">
-      <span>📸</span> Live photos
-    </a>
-    <a href="/slideshow.html" class="top-nav-btn top-nav-secondary">
-      <span>🖥</span> Slideshow
-    </a>
-    <a href="#previous-events" class="top-nav-btn top-nav-tertiary">
-      <span>🎉</span> Previous Events
-    </a>
-    <a href="#about" class="top-nav-btn top-nav-tertiary">
-      <span>ℹ️</span> About Us
+      Live photos
     </a>
   </nav>
+  <div class="more-links">
+    <a href="/slideshow.html">Slideshow</a>
+    <a href="#previous-events">Previous events</a>
+    <a href="#about">About</a>
+  </div>
+
+  <div class="staff-tools" id="staffTools">
+    <div class="staff-tools-label">Staff tools</div>
+    <div class="staff-tools-row">
+      <a href="/costume-admin.html" id="toolCostumes">Upload costumes</a>
+      <a href="/moderate.html" id="toolPhotos">Approve photos</a>
+      <a href="/results.html">Live results</a>
+      <a href="/slideshow.html">Slideshow</a>
+    </div>
+    <p class="staff-warn" id="staffWarn" hidden></p>
+  </div>
 
   <section class="hero">
     <p class="event-kicker">Basecamp Beats presents</p>
@@ -1926,11 +2229,6 @@
         <p class="schedule-tba-note">Tickets via <a href="https://www.chautary.com/events/dmvs-first-nepali-halloween-costume-party-ok1rqd" target="_blank" rel="noopener noreferrer">Chautary</a> · Updates on <a href="https://www.instagram.com/basecamp_beats/" target="_blank" rel="noopener noreferrer">@basecamp_beats</a></p>
       </div>
 
-      <div class="button-group">
-        <a href="/vote.html" class="btn btn-primary">Vote costumes</a>
-        <a href="https://www.chautary.com/events/dmvs-first-nepali-halloween-costume-party-ok1rqd" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Get tickets</a>
-      </div>
-      
       <div class="event-notes">
         <p><strong>Venue address:</strong> 10312 Willard Way, Fairfax, VA 22030</p>
         <p><strong>The night:</strong> Halloween walk show · Costume competition · Open DJ floor</p>
@@ -1979,6 +2277,7 @@
           <ul>
             <li><strong>Tickets:</strong> via <a href="https://www.chautary.com/events/dmvs-first-nepali-halloween-costume-party-ok1rqd" target="_blank" rel="noopener noreferrer" style="color: #ff7a2e;">Chautary</a></li>
             <li><strong>Costume vote:</strong> <a href="/vote.html" style="color: #ff7a2e;">Vote the looks</a> · <a href="/results.html" style="color: #ff7a2e;">Live results</a></li>
+            <li><strong>Photos:</strong> <a href="/upload.html" style="color: #ff7a2e;">Live photos</a> · <a href="/slideshow.html" style="color: #ff7a2e;">Slideshow</a></li>
             <li><strong>Costume:</strong> strongly encouraged — competition night</li>
             <li><strong>Drinks:</strong> 21+ with valid ID</li>
             <li><strong>Updates:</strong> <a href="https://www.instagram.com/basecamp_beats/" target="_blank" rel="noopener noreferrer" style="color: #ff7a2e;">@basecamp_beats</a></li>
@@ -2117,6 +2416,11 @@
   <footer>
     <div class="footer-content">
       <p class="footer-tagline">Halloween night is coming — follow for tickets, looks, and updates</p>
+      <p class="more-links" style="padding: 0 0 24px;">
+        <a href="/slideshow.html">Slideshow</a>
+        <a href="#previous-events">Previous events</a>
+        <a href="#about">About</a>
+      </p>
       <div class="social-links">
         <a href="https://www.instagram.com/basecamp_beats/" target="_blank" rel="noopener noreferrer" class="social-link">
           <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -2134,6 +2438,111 @@
       <p class="footer-copyright">© 2026 Basecamp Beats. All rights reserved.</p>
     </div>
   </footer>
+  <script>
+    (function () {
+      const KEY = 'bb_mod_secret';
+      const EVENT_ID = 'halloween-2026';
+      const COSTUME_API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
+      const UPLOAD_API = 'https://bb-photo-upload.beatsbasecamp.workers.dev';
+
+      const btn = document.getElementById('adminBtn');
+      const modal = document.getElementById('adminModal');
+      const form = document.getElementById('adminForm');
+      const input = document.getElementById('adminCode');
+      const go = document.getElementById('adminGo');
+      const err = document.getElementById('adminErr');
+      const tools = document.getElementById('staffTools');
+      const warn = document.getElementById('staffWarn');
+
+      async function check(base, path, code) {
+        try {
+          const u = new URL(path, base);
+          u.searchParams.set('event', EVENT_ID);
+          const res = await fetch(u.toString(), { headers: { Authorization: 'Bearer ' + code } });
+          return res.ok;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      async function verify(code) {
+        const [costumes, photos] = await Promise.all([
+          check(COSTUME_API, '/admin', code),
+          check(UPLOAD_API, '/pending', code),
+        ]);
+        return { costumes, photos };
+      }
+
+      function showTools(r) {
+        tools.classList.add('is-on');
+        btn.classList.add('is-on');
+        btn.textContent = 'Lock';
+        document.getElementById('toolCostumes').classList.toggle('is-off', !r.costumes);
+        document.getElementById('toolPhotos').classList.toggle('is-off', !r.photos);
+        const broken = [];
+        if (!r.costumes) broken.push('bb-costume-vote');
+        if (!r.photos) broken.push('bb-photo-upload');
+        warn.hidden = !broken.length;
+        warn.textContent = broken.length ? `Code not accepted by ${broken.join(' and ')}.` : '';
+      }
+
+      function hideTools() {
+        tools.classList.remove('is-on');
+        btn.classList.remove('is-on');
+        btn.textContent = 'Admin';
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-on');
+        err.textContent = '';
+        input.value = '';
+      }
+
+      btn.addEventListener('click', () => {
+        if (localStorage.getItem(KEY)) {
+          if (!confirm('Lock staff tools on this phone?')) return;
+          localStorage.removeItem(KEY);
+          hideTools();
+          return;
+        }
+        modal.classList.add('is-on');
+        setTimeout(() => input.focus(), 50);
+      });
+
+      document.getElementById('adminCancel').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const code = input.value.trim();
+        if (!code) return;
+        go.disabled = true;
+        go.textContent = 'Checking…';
+        err.textContent = '';
+        const r = await verify(code);
+        go.disabled = false;
+        go.textContent = 'Unlock';
+        if (!r.costumes && !r.photos) {
+          err.textContent = 'Wrong code.';
+          return;
+        }
+        localStorage.setItem(KEY, code);
+        closeModal();
+        showTools(r);
+      });
+
+      const saved = localStorage.getItem(KEY);
+      if (saved) {
+        verify(saved).then((r) => {
+          if (!r.costumes && !r.photos) {
+            localStorage.removeItem(KEY);
+            return;
+          }
+          showTools(r);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
 

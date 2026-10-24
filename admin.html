@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Basecamp Beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: 'Poppins', system-ui, sans-serif;
+      color: #fff;
+      background: #080301;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.32), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(194, 65, 45, 0.16), transparent 50%);
+      pointer-events: none;
+    }
+    .wrap { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; padding: 16px 16px 56px; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .top a, .top button {
+      color: rgba(255,255,255,0.55);
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .top a:hover, .top button:hover { color: #e8c07a; }
+    .kicker {
+      display: block;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e8c07a;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: clamp(1.7rem, 6vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-align: center;
+      line-height: 1.1;
+      margin-bottom: 22px;
+    }
+    .gate {
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 179, 106, 0.3);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      font: inherit;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    input:focus { outline: none; border-color: #ffb36a; }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 13px 14px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff8a3d, #c2412d);
+      color: #fff;
+    }
+    .btn:disabled { opacity: 0.55; cursor: wait; }
+    .msg { min-height: 1.3em; margin-top: 12px; font-size: 0.88rem; font-weight: 600; color: #f87171; text-align: center; }
+    .tiles { display: grid; gap: 10px; }
+    .tile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
+      color: #fff;
+      text-decoration: none;
+    }
+    .tile:hover { border-color: #ffb36a; }
+    .tile .ico { font-size: 1.5rem; width: 32px; text-align: center; }
+    .tile strong { display: block; font-size: 1rem; }
+    .tile span { display: block; font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+    .tile.off { opacity: 0.45; pointer-events: none; }
+    .section { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin: 18px 0 8px; }
+    .warn { font-size: 0.82rem; color: #f8b26a; margin-top: 10px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a href="/">← Home</a>
+      <button type="button" id="logout" hidden>Lock</button>
+    </div>
+    <span class="kicker">Staff only</span>
+    <h1>Admin</h1>
+
+    <form class="gate" id="gate">
+      <label for="code">Admin code</label>
+      <input id="code" type="password" autocomplete="current-password" placeholder="Enter code" required>
+      <button class="btn" id="unlock" type="submit">Unlock</button>
+      <p class="msg" id="msg"></p>
+    </form>
+
+    <div id="hub" hidden>
+      <div class="tiles">
+        <a class="tile" id="tileCostumes" href="/costume-admin.html">
+          <div class="ico">🎃</div>
+          <div><strong>Costume uploads</strong><span>Add finalists, remove looks, reset votes</span></div>
+        </a>
+        <a class="tile" id="tilePhotos" href="/moderate.html">
+          <div class="ico">📸</div>
+          <div><strong>Live photo approval</strong><span>Approve or remove guest photos</span></div>
+        </a>
+      </div>
+      <p class="warn" id="warn" hidden></p>
+      <div class="section">Quick links</div>
+      <div class="tiles">
+        <a class="tile" href="/results.html">
+          <div class="ico">🏆</div>
+          <div><strong>Live results</strong><span>Leaderboard for the screen</span></div>
+        </a>
+        <a class="tile" href="/slideshow.html">
+          <div class="ico">🖥️</div>
+          <div><strong>Slideshow</strong><span>Tonight’s photo wall, full screen</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    const KEY = 'bb_mod_secret';
+    const EVENT_ID = 'halloween-2026';
+    const COSTUME_API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
+    const UPLOAD_API = 'https://bb-photo-upload.beatsbasecamp.workers.dev';
+
+    const gate = document.getElementById('gate');
+    const hub = document.getElementById('hub');
+    const msg = document.getElementById('msg');
+    const warn = document.getElementById('warn');
+    const unlockBtn = document.getElementById('unlock');
+    const logout = document.getElementById('logout');
+
+    function url(base, path) {
+      const u = new URL(path, base);
+      u.searchParams.set('event', EVENT_ID);
+      return u.toString();
+    }
+
+    async function check(base, path, code) {
+      try {
+        const res = await fetch(url(base, path), { headers: { Authorization: 'Bearer ' + code } });
+        return res.ok;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function showHub(costumeOk, photosOk) {
+      gate.hidden = true;
+      hub.hidden = false;
+      logout.hidden = false;
+      document.getElementById('tileCostumes').classList.toggle('off', !costumeOk);
+      document.getElementById('tilePhotos').classList.toggle('off', !photosOk);
+      const broken = [];
+      if (!costumeOk) broken.push('bb-costume-vote');
+      if (!photosOk) broken.push('bb-photo-upload');
+      warn.hidden = !broken.length;
+      warn.textContent = broken.length
+        ? `Code not accepted by ${broken.join(' and ')}. Set the same MODERATION_SECRET there.`
+        : '';
+    }
+
+    async function unlock(code) {
+      unlockBtn.disabled = true;
+      unlockBtn.textContent = 'Checking…';
+      msg.textContent = '';
+      const [costumeOk, photosOk] = await Promise.all([
+        check(COSTUME_API, '/admin', code),
+        check(UPLOAD_API, '/pending', code),
+      ]);
+      unlockBtn.disabled = false;
+      unlockBtn.textContent = 'Unlock';
+      if (!costumeOk && !photosOk) {
+        localStorage.removeItem(KEY);
+        msg.textContent = 'Wrong code.';
+        return;
+      }
+      localStorage.setItem(KEY, code);
+      showHub(costumeOk, photosOk);
+    }
+
+    gate.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = document.getElementById('code').value.trim();
+      if (code) unlock(code);
+    });
+
+    logout.addEventListener('click', () => {
+      localStorage.removeItem(KEY);
+      hub.hidden = true;
+      gate.hidden = false;
+      logout.hidden = true;
+      document.getElementById('code').value = '';
+    });
+
+    const saved = localStorage.getItem(KEY);
+    if (saved) unlock(saved);
+  </script>
+</body>
+</html>

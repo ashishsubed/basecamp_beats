@@ -9,11 +9,11 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bb-cyan: #00d2ff;
-      --bb-mint: #63e6be;
-      --bb-red: #e85d75;
+      --bb-cyan: #ff7a2e;
+      --bb-mint: #e8c07a;
+      --bb-red: #c2412d;
       --surface: rgba(255, 255, 255, 0.04);
-      --border: rgba(0, 210, 255, 0.18);
+      --border: rgba(255, 122, 46, 0.22);
     }
 
     body {
@@ -21,8 +21,7 @@
       min-height: 100vh;
       font-family: 'Poppins', 'Inter', system-ui, sans-serif;
       color: #fff;
-      background: linear-gradient(165deg, #05050c 0%, #0a0b1e 40%, #0c0818 100%);
-      background-attachment: fixed;
+      background: #080301;
       padding: 24px 20px 32px;
       position: relative;
     }
@@ -32,8 +31,8 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 50% at 80% 0%, rgba(140, 100, 220, 0.08), transparent 55%),
-        radial-gradient(ellipse 70% 45% at 15% 90%, rgba(0, 210, 255, 0.06), transparent 50%);
+        radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.32), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(194, 65, 45, 0.16), transparent 50%);
       pointer-events: none;
       z-index: 0;
     }
@@ -65,12 +64,10 @@
     }
 
     .card {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
       border-radius: 20px;
-      padding: 32px 28px;
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+      padding: 28px 22px;
     }
 
     .title-block {
@@ -79,15 +76,21 @@
     }
 
     .title-block h1 {
-      font-family: 'Righteous', 'Poppins', sans-serif;
-      font-size: clamp(1.75rem, 5vw, 2.25rem);
-      font-weight: 400;
-      background: linear-gradient(120deg, var(--bb-cyan) 0%, var(--bb-red) 50%, var(--bb-mint) 100%);
-      background-size: 160% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 0.02em;
+      font-family: 'Poppins', system-ui, sans-serif;
+      font-size: clamp(1.7rem, 6vw, 2.25rem);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .kicker {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e8c07a;
       margin-bottom: 8px;
     }
 
@@ -98,24 +101,24 @@
     }
 
     .dropzone {
-      border: 1.5px dashed rgba(0, 210, 255, 0.35);
+      border: 1.5px dashed rgba(255, 122, 46, 0.4);
       border-radius: 14px;
       padding: 36px 20px;
       text-align: center;
       cursor: pointer;
       transition: border-color 0.25s ease, background 0.25s ease;
-      background: rgba(0, 210, 255, 0.03);
+      background: rgba(255, 122, 46, 0.05);
     }
 
     .dropzone:hover,
     .dropzone:focus-within {
-      border-color: rgba(0, 210, 255, 0.65);
-      background: rgba(0, 210, 255, 0.06);
+      border-color: rgba(255, 179, 106, 0.7);
+      background: rgba(255, 122, 46, 0.08);
     }
 
     .dropzone.dragover {
       border-color: var(--bb-mint);
-      background: rgba(99, 230, 190, 0.08);
+      background: rgba(232, 192, 122, 0.08);
     }
 
     .dropzone .icon {
@@ -145,8 +148,8 @@
     }
 
     .pick {
-      border: 1px solid rgba(0, 210, 255, 0.35);
-      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(255, 122, 46, 0.4);
+      background: rgba(255, 122, 46, 0.1);
       color: #fff;
       border-radius: 12px;
       padding: 14px 8px;
@@ -155,7 +158,12 @@
       cursor: pointer;
     }
 
-    .pick:hover { background: rgba(0, 210, 255, 0.16); }
+    .pick:hover { background: rgba(255, 122, 46, 0.2); }
+
+    #takePhoto {
+      background: linear-gradient(135deg, #ff8a3d, #c2412d);
+      border-color: transparent;
+    }
 
     input[type="file"] {
       display: none;
@@ -203,14 +211,14 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #00b8e6 0%, #2a8fd9 100%);
+      background: linear-gradient(135deg, #ff8a3d 0%, #c2412d 100%);
       color: #fff;
-      box-shadow: 0 6px 24px rgba(0, 180, 230, 0.35);
+      box-shadow: 0 6px 24px rgba(255, 122, 46, 0.35);
     }
 
     .btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(0, 200, 255, 0.4);
+      box-shadow: 0 10px 28px rgba(255, 122, 46, 0.4);
     }
 
     .btn-ghost {
@@ -221,7 +229,7 @@
     }
 
     .btn-ghost:hover:not(:disabled) {
-      border-color: rgba(0, 210, 255, 0.5);
+      border-color: rgba(232, 192, 122, 0.5);
       color: #fff;
     }
 
@@ -240,8 +248,8 @@
     }
 
     .status.ok {
-      background: rgba(99, 230, 190, 0.12);
-      border: 1px solid rgba(99, 230, 190, 0.35);
+      background: rgba(232, 192, 122, 0.12);
+      border: 1px solid rgba(232, 192, 122, 0.35);
       color: var(--bb-mint);
     }
 
@@ -327,8 +335,8 @@
       height: 64px;
       margin: 0 auto 20px;
       border-radius: 50%;
-      background: linear-gradient(135deg, rgba(99, 230, 190, 0.25), rgba(0, 210, 255, 0.15));
-      border: 2px solid rgba(99, 230, 190, 0.5);
+      background: linear-gradient(135deg, rgba(232, 192, 122, 0.25), rgba(255, 140, 40, 0.15));
+      border: 2px solid rgba(232, 192, 122, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -373,13 +381,14 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="back-link" href="/">← Back to event</a>
+    <a class="back-link" href="/">← Home</a>
 
     <div class="card">
       <div id="uploadFlow">
         <div class="title-block">
+          <span class="kicker">Halloween 2026</span>
           <h1>Live photos</h1>
-          <p>Halloween 2026 — add a shot, then watch tonight’s wall below</p>
+          <p>Snap the night. It lands on tonight’s wall.</p>
         </div>
 
         <div class="dropzone" id="dropzone">
@@ -407,9 +416,9 @@
         <div class="status" id="status" role="alert"></div>
 
         <div class="footer-link">
-          <a href="/slideshow.html?event=halloween-2026">Full-screen slideshow →</a>
+          <a href="/slideshow.html?event=halloween-2026">Slideshow</a>
           &nbsp;·&nbsp;
-          <a href="/vote.html">Vote costumes →</a>
+          <a href="/vote.html">Vote costumes</a>
         </div>
       </div>
 

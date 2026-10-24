@@ -112,16 +112,68 @@
     .look .danger { width: 100%; margin-top: 8px; padding: 10px; }
     #app { display: none; }
     .empty { color: #fff; }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: #080301;
+      color: #fff;
+      padding: 16px 16px 48px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.28), transparent 55%);
+      pointer-events: none;
+    }
+    .wrap { position: relative; }
+    .back { display: inline-block; margin-bottom: 18px; color: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+    .back:hover { color: #e8c07a; }
+    .kicker { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8c07a; margin-bottom: 6px; }
+    h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); font-weight: 800; letter-spacing: -0.04em; }
+    .hint { color: rgba(255,255,255,0.6); }
+    .card, .look {
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
+      color: #fff;
+    }
+    label { color: rgba(255,255,255,0.7); }
+    input[type="text"], input[type="password"] {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 179, 106, 0.3);
+      color: #fff;
+      border-radius: 12px;
+    }
+    input:focus { outline: none; border-color: #ffb36a; }
+    .pick {
+      background: rgba(255, 122, 46, 0.08);
+      border: 1.5px dashed rgba(255, 122, 46, 0.45);
+      color: #fff;
+    }
+    .pick:hover { background: rgba(255, 122, 46, 0.16); }
+    .file-name { color: rgba(255,255,255,0.5); }
+    button { border-radius: 999px; }
+    .btn-primary { background: linear-gradient(135deg, #ff8a3d, #c2412d); font-weight: 800; }
+    .ghost { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); }
+    .danger { background: rgba(248,113,113,0.15); color: #fca5a5; border: 1px solid rgba(248,113,113,0.4); }
+    .msg { color: #e8c07a; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .look { border-radius: 16px; }
+    .look img { height: auto; aspect-ratio: 3 / 4; }
+    .empty { color: rgba(255,255,255,0.6); }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="wrap">
-    <h1>Costume contest uploads</h1>
-    <p class="hint">Walk-show finalists only. Guest photos: <a href="/moderate.html">photo moderation</a>. Public: <a href="/vote.html">vote</a> · <a href="/results.html">results</a></p>
+    <a class="back" href="/">← Home</a>
+    <span class="kicker">Staff · Costume competition</span>
+    <h1>Upload costumes</h1>
+    <p class="hint">Walk-show finalists only. <a href="/moderate.html">Approve photos</a> · <a href="/vote.html">Vote page</a> · <a href="/results.html">Live results</a></p>
 
     <div class="card" id="auth">
-      <label for="secret">Moderation secret</label>
-      <input type="password" id="secret" placeholder="Secret" autocomplete="off">
+      <label for="secret">Moderation code</label>
+      <input type="password" id="secret" placeholder="Moderation code" autocomplete="off">
       <button type="button" class="btn-primary" id="login">Unlock</button>
       <p class="msg" id="authMsg"></p>
     </div>
@@ -162,7 +214,7 @@
   <script>
     const API = 'https://bb-costume-vote.beatsbasecamp.workers.dev';
     const EVENT_ID = 'halloween-2026';
-    let secret = sessionStorage.getItem('bb_mod_secret') || '';
+    let secret = localStorage.getItem('bb_mod_secret') || '';
     let chosenFile = null;
 
     function apiUrl(path) {
@@ -246,7 +298,7 @@
     const authMsg = document.getElementById('authMsg');
 
     function lockApp(message) {
-      sessionStorage.removeItem('bb_mod_secret');
+      localStorage.removeItem('bb_mod_secret');
       secret = '';
       app.style.display = 'none';
       auth.style.display = 'block';
@@ -281,7 +333,7 @@
     document.getElementById('login').addEventListener('click', async () => {
       secret = document.getElementById('secret').value.trim();
       if (!secret) return;
-      sessionStorage.setItem('bb_mod_secret', secret);
+      localStorage.setItem('bb_mod_secret', secret);
       if (authMsg) authMsg.textContent = 'Checking…';
       await openApp();
     });

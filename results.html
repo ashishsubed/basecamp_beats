@@ -4,75 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live costume results — Basecamp Beats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       font-family: 'Poppins', system-ui, sans-serif;
       color: #fff;
-      background: #050201;
+      background: #080301;
     }
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 80% 55% at 50% -10%, rgba(255, 140, 40, 0.22), transparent 55%),
-        radial-gradient(ellipse 50% 40% at 90% 90%, rgba(194, 65, 45, 0.1), transparent 50%);
+        radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.32), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(194, 65, 45, 0.16), transparent 50%);
       pointer-events: none;
     }
-    .wrap { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 20px 16px 48px; }
+    .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 16px 16px 56px; }
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 22px;
     }
-    a { color: #e8c07a; font-weight: 700; text-decoration: none; }
-    h1 {
-      font-family: 'Cinzel', serif;
+    a { color: rgba(255,255,255,0.55); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+    a:hover { color: #e8c07a; }
+    .kicker {
+      display: block;
       text-align: center;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      background: linear-gradient(135deg, #ffb36a, #ff7a2e);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e8c07a;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: clamp(1.7rem, 6vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-align: center;
+      color: #fff;
+      line-height: 1.1;
     }
     .totals {
       text-align: center;
-      color: rgba(255,255,255,0.65);
-      margin: 6px 0 22px;
+      color: rgba(255,255,255,0.62);
+      margin: 8px 0 22px;
       font-weight: 600;
     }
     .lead {
       position: relative;
       border-radius: 22px;
       overflow: hidden;
-      margin-bottom: 22px;
-      border: 1px solid rgba(232, 192, 122, 0.45);
+      margin-bottom: 16px;
+      border: 1px solid rgba(232, 192, 122, 0.5);
       background: #120804;
       cursor: pointer;
     }
     .lead img {
       width: 100%;
-      height: min(72vh, 620px);
-      object-fit: contain;
+      aspect-ratio: 4 / 5;
+      max-height: 38vh;
+      object-fit: cover;
       background: #0a0503;
       display: block;
     }
-    .lead-meta {
-      padding: 16px 18px 18px;
-    }
+    .lead-meta { padding: 16px 16px 18px; }
     .rank {
       font-weight: 800;
       color: #e8c07a;
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       margin-bottom: 4px;
     }
-    .name { font-weight: 800; font-size: 1.35rem; }
+    .name { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.03em; }
     .bar-wrap {
       height: 8px;
       background: rgba(255,255,255,0.1);
@@ -88,24 +97,30 @@
     .count { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
     }
     .card {
       background: #120804;
-      border: 1px solid rgba(255,122,46,0.25);
-      border-radius: 18px;
+      border: 1px solid rgba(255,179,106,0.22);
+      border-radius: 16px;
       overflow: hidden;
       cursor: pointer;
     }
     .card img {
       width: 100%;
-      height: 280px;
+      aspect-ratio: 3 / 4;
       object-fit: cover;
       display: block;
       background: #0a0503;
     }
-    .card .pad { padding: 12px 14px 14px; }
+    .card .pad { padding: 10px 10px 12px; }
+    .card .name { font-size: 0.95rem; line-height: 1.25; }
+    .card .count { font-size: 0.8rem; }
+    .card .bar-wrap { height: 6px; margin: 8px 0 4px; }
     .empty { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
     .lightbox {
       display: none;
@@ -133,6 +148,7 @@
       <a href="/vote.html">← Vote</a>
       <a href="/">Home</a>
     </div>
+    <span class="kicker">Costume competition</span>
     <h1>Live results</h1>
     <p class="totals" id="totals">Waiting for votes…</p>
     <div id="board"></div>

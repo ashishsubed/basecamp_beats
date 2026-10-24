@@ -267,27 +267,95 @@
       transform: scale(1.1);
       background: #f7fafc;
     }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: #080301;
+      color: #fff;
+      padding: 16px 16px 48px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.28), transparent 55%);
+      pointer-events: none;
+    }
+    .container { position: relative; max-width: 960px; }
+    .back { display: inline-block; margin-bottom: 18px; color: rgba(255,255,255,0.55); font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+    .back:hover { color: #e8c07a; }
+    .kicker { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #e8c07a; margin-bottom: 6px; }
+    h1 { font-size: clamp(1.6rem, 6vw, 2.2rem); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 6px; }
+    .sub { color: rgba(255,255,255,0.6); margin-bottom: 20px; font-size: 0.92rem; }
+    .auth-panel, .message, .empty, .photo-card {
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
+      box-shadow: none;
+      color: #fff;
+    }
+    .auth-panel h2 { font-size: 1.05rem; }
+    .auth-panel input, .auth-panel button { font-family: inherit; }
+    .auth-panel input {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 179, 106, 0.3);
+      color: #fff;
+      border-radius: 12px;
+    }
+    .auth-panel button { background: linear-gradient(135deg, #ff8a3d, #c2412d); border-radius: 999px; font-weight: 800; }
+    .auth-panel button:hover { background: linear-gradient(135deg, #ff8a3d, #c2412d); filter: brightness(1.08); }
+    .actions { gap: 8px; margin-bottom: 18px; }
+    .tabs { background: rgba(255,255,255,0.06); padding: 4px; border-radius: 999px; }
+    .tab-btn { border-radius: 999px; padding: 9px 16px; font-size: 0.9rem; font-family: inherit; }
+    .tab-btn.active { background: #ffb36a; color: #140804; }
+    .btn {
+      background: transparent;
+      color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+    .btn:hover { color: #e8c07a; border-color: rgba(232,192,122,0.5); background: transparent; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .photo-card { border-radius: 16px; }
+    .photo-card:hover { transform: none; }
+    .photo-card img { height: auto; aspect-ratio: 3 / 4; }
+    .photo-card .info { padding: 10px; }
+    .photo-card .key { color: rgba(255,255,255,0.45); font-size: 0.72rem; }
+    .photo-card button { border-radius: 999px; font-family: inherit; padding: 9px 6px; }
+    .btn-approve { background: #ff8a3d; color: #140804; }
+    .btn-approve:hover { background: #ffb36a; }
+    .btn-reject, .btn-delete-approved { background: rgba(248,113,113,0.15); color: #fca5a5; border: 1px solid rgba(248,113,113,0.4) !important; }
+    .btn-reject:hover, .btn-delete-approved:hover { background: rgba(248,113,113,0.25); }
+    .approved-badge { background: #e8c07a; color: #140804; }
+    .message.success { color: #e8c07a; }
+    .message.error { color: #fca5a5; }
+    .empty { color: rgba(255,255,255,0.6); font-size: 0.95rem; }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1>📸 Photo Moderation</h1>
-    <p style="color:rgba(255,255,255,0.85);margin:-0.4rem 0 1.4rem">Halloween 2026 guest photos only — costume looks are on vote-admin.</p>
+    <a class="back" href="/">← Home</a>
+    <span class="kicker">Staff · Halloween 2026</span>
+    <h1>Approve photos</h1>
+    <p class="sub">Guest photos from the live wall. Costume finalists live on Upload costumes.</p>
 
     <div class="auth-panel" id="authPanel">
-      <h2 style="margin-bottom: 1rem;">Enter moderation secret</h2>
-      <input type="password" id="secretInput" placeholder="Moderation secret" autocomplete="off">
-      <button id="authBtn">Authenticate</button>
+      <h2 style="margin-bottom: 1rem;">Moderation code</h2>
+      <input type="password" id="secretInput" placeholder="Moderation code" autocomplete="off">
+      <button id="authBtn">Unlock</button>
     </div>
 
     <div id="moderationPanel">
       <div class="actions">
         <div class="tabs">
-          <button class="tab-btn active" id="pendingTab">⏳ Pending</button>
-          <button class="tab-btn" id="approvedTab">✓ Approved</button>
+          <button class="tab-btn active" id="pendingTab">Pending</button>
+          <button class="tab-btn" id="approvedTab">Approved</button>
         </div>
-        <button class="btn" id="refreshBtn">🔄 Refresh</button>
-        <button class="btn" id="logoutBtn">🚪 Logout</button>
+        <button class="btn" id="refreshBtn">Refresh</button>
+        <button class="btn" id="logoutBtn">Lock</button>
       </div>
 
       <div id="message"></div>
@@ -313,7 +381,7 @@
       return u.toString();
     }
 
-    let secret = sessionStorage.getItem('bb_mod_secret') || '';
+    let secret = localStorage.getItem('bb_mod_secret') || '';
     let currentView = 'pending'; // 'pending' or 'approved'
 
     const authPanel = document.getElementById('authPanel');
@@ -327,7 +395,7 @@
     const messageEl = document.getElementById('message');
     const photosContainer = document.getElementById('photosContainer');
 
-    // Only auto-login if secret exists in sessionStorage AND is valid
+    // Only auto-login if secret exists in localStorage AND is valid
     if (secret) {
       verifyAndShowModeration();
     }
@@ -339,14 +407,14 @@
         return;
       }
       secret = val;
-      sessionStorage.setItem('bb_mod_secret', secret);
+      localStorage.setItem('bb_mod_secret', secret);
       secretInput.value = '';
       verifyAndShowModeration();
     });
 
     async function verifyAndShowModeration() {
       authBtn.disabled = true;
-      authBtn.textContent = 'Verifying...';
+      authBtn.textContent = 'Checking…';
       
       try {
         // Test the secret by fetching pending list
@@ -356,11 +424,11 @@
 
         if (res.status === 401) {
           // Invalid secret
-          sessionStorage.removeItem('bb_mod_secret');
+          localStorage.removeItem('bb_mod_secret');
           secret = '';
           alert('Invalid secret. Please try again.');
           authBtn.disabled = false;
-          authBtn.textContent = 'Authenticate';
+          authBtn.textContent = 'Unlock';
           secretInput.focus();
           return;
         }
@@ -368,7 +436,7 @@
         if (!res.ok) {
           alert('Server error. Please try again.');
           authBtn.disabled = false;
-          authBtn.textContent = 'Authenticate';
+          authBtn.textContent = 'Unlock';
           return;
         }
 
@@ -379,7 +447,7 @@
         console.error(err);
         alert('Network error. Please check your connection.');
         authBtn.disabled = false;
-        authBtn.textContent = 'Authenticate';
+        authBtn.textContent = 'Unlock';
       }
     }
 
@@ -389,7 +457,7 @@
 
     logoutBtn.addEventListener('click', () => {
       secret = '';
-      sessionStorage.removeItem('bb_mod_secret');
+      localStorage.removeItem('bb_mod_secret');
       authPanel.style.display = 'block';
       moderationPanel.style.display = 'none';
       photosContainer.innerHTML = '';

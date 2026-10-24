@@ -3,117 +3,139 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vote the costumes — Basecamp Beats</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Vote costumes — Basecamp Beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       font-family: 'Poppins', system-ui, sans-serif;
       color: #fff;
-      background: #050201;
+      background: #080301;
     }
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 70% 50% at 80% 0%, rgba(255, 122, 46, 0.22), transparent 55%),
-        radial-gradient(ellipse 60% 40% at 10% 100%, rgba(194, 65, 45, 0.12), transparent 50%);
+        radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 140, 40, 0.32), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 100% 80%, rgba(194, 65, 45, 0.16), transparent 50%);
       pointer-events: none;
-      z-index: 0;
     }
-    .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 24px 18px 48px; }
+    .wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 16px 16px 56px; }
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
+      margin-bottom: 22px;
     }
-    .back { color: rgba(255,255,255,0.55); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+    .back { color: rgba(255,255,255,0.55); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
     .back:hover { color: #e8c07a; }
     .results-link {
       color: #140804;
-      background: linear-gradient(135deg, #ff8a3d, #e8c07a);
+      background: linear-gradient(135deg, #ffb36a, #ff7a2e);
       text-decoration: none;
       font-weight: 800;
-      padding: 10px 18px;
+      padding: 8px 16px;
       border-radius: 999px;
-      font-size: 0.9rem;
+      font-size: 0.84rem;
+    }
+    .kicker {
+      display: block;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #e8c07a;
+      margin-bottom: 8px;
     }
     h1 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-size: clamp(1.7rem, 6vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
       text-align: center;
-      background: linear-gradient(135deg, #ffb36a, #ff7a2e, #e8c07a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      color: #fff;
+      line-height: 1.1;
     }
     .lede {
       text-align: center;
-      color: rgba(255,255,255,0.78);
-      max-width: 560px;
-      margin: 0 auto 12px;
-      line-height: 1.6;
+      color: rgba(255,255,255,0.68);
+      max-width: 360px;
+      margin: 10px auto 8px;
+      line-height: 1.5;
+      font-size: 0.98rem;
     }
-    .rule {
+    .prize {
       text-align: center;
-      font-size: 0.85rem;
-      color: #e8c07a;
-      margin-bottom: 28px;
+      color: #ffb36a;
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 18px;
     }
     .status {
       text-align: center;
-      min-height: 1.4em;
-      margin-bottom: 18px;
+      min-height: 1.3em;
+      margin-bottom: 16px;
       font-weight: 600;
+      font-size: 0.92rem;
       color: #e8c07a;
     }
     .status.err { color: #f87171; }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 18px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
     }
     .card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255, 122, 46, 0.28);
-      border-radius: 18px;
+      background: #120804;
+      border: 1px solid rgba(255, 179, 106, 0.22);
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(255, 106, 32, 0.2); }
     .card.is-mine {
       border-color: #e8c07a;
       box-shadow: 0 0 0 2px rgba(232, 192, 122, 0.45);
     }
     .card img {
       width: 100%;
-      height: 280px;
+      aspect-ratio: 3 / 4;
       object-fit: cover;
       display: block;
       cursor: pointer;
       background: #1a0c06;
     }
-    .meta { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .name { font-weight: 700; font-size: 1.05rem; }
-    .vote-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 12px 14px;
+    .meta {
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .name {
       font-weight: 800;
       font-size: 0.95rem;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      flex: 1;
+    }
+    .vote-btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 8px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.85rem;
       cursor: pointer;
-      background: linear-gradient(135deg, #ff7a2e, #c2412d);
+      background: linear-gradient(135deg, #ff8a3d, #c2412d);
       color: #fff;
     }
-    .vote-btn:hover { filter: brightness(1.08); }
     .vote-btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .vote-btn.is-mine {
       background: linear-gradient(135deg, #e8c07a, #ffb36a);
@@ -141,12 +163,13 @@
 <body>
   <div class="wrap">
     <div class="top">
-      <a class="back" href="/">← Basecamp Beats</a>
-      <a class="results-link" href="/results.html">Live results →</a>
+      <a class="back" href="/">← Home</a>
+      <a class="results-link" href="/results.html">Live results</a>
     </div>
-    <h1>Vote the costume</h1>
-    <p class="lede">Finalists from the walk show. Pick your favorite — winner takes <strong>$100</strong> and the trophy.</p>
-    <p class="rule">One vote per phone. You can switch looks. Incognito still counts as the same phone.</p>
+    <span class="kicker">Costume competition</span>
+    <h1>Vote costumes</h1>
+    <p class="lede">Tap the look you want to win.</p>
+    <p class="prize">$100 + trophy</p>
     <div class="status" id="status"></div>
     <div id="grid" class="loading">Loading looks…</div>
   </div>
@@ -160,6 +183,32 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     let visitorId = '';
+    let votedFor = null;
+    let orderKeys = null;
+
+    function shuffle(list) {
+      const a = list.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function ordered(entries) {
+      if (!orderKeys) {
+        orderKeys = shuffle(entries).map((e) => e.key);
+      }
+      const byKey = new Map(entries.map((e) => [e.key, e]));
+      const known = orderKeys.map((k) => byKey.get(k)).filter(Boolean);
+      const extra = entries.filter((e) => !orderKeys.includes(e.key));
+      if (extra.length) {
+        const extraShuffled = shuffle(extra);
+        extraShuffled.forEach((e) => orderKeys.push(e.key));
+        return known.concat(extraShuffled);
+      }
+      return known;
+    }
 
     async function ensureVisitor() {
       if (visitorId) return visitorId;
@@ -204,17 +253,16 @@
       return data;
     }
 
-    let votedFor = null;
-
     function render(entries) {
-      if (!entries.length) {
+      const list = ordered(entries);
+      if (!list.length) {
         grid.className = 'empty';
         grid.textContent = 'Finalists will appear here after the walk show.';
         return;
       }
       grid.className = 'grid';
       grid.innerHTML = '';
-      entries.forEach((e) => {
+      list.forEach((e) => {
         const mine = votedFor === e.key;
         const card = document.createElement('article');
         card.className = 'card' + (mine ? ' is-mine' : '');
@@ -224,7 +272,7 @@
           <img src="${src}" alt="${e.name}" loading="lazy" decoding="async">
           <div class="meta">
             <div class="name">${mine ? '★ ' : ''}${e.name}</div>
-            <button class="vote-btn${mine ? ' is-mine' : ''}" type="button">${mine ? 'Your vote' : 'Vote this look'}</button>
+            <button class="vote-btn${mine ? ' is-mine' : ''}" type="button">${mine ? 'Your vote' : 'Vote'}</button>
           </div>`;
         card.querySelector('img').addEventListener('click', () => {
           lightboxImg.src = full;
